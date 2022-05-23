@@ -13,9 +13,9 @@ public interface PaymentMapper {
     @Update("update payment set credit = credit + #{funds} where userid = #{id}")
     Boolean add(String id, int funds);
 
-    @Insert("insert into user(userid, credit) values(#{id}, 0)")
-    String create();
+    @Insert("insert into payment(userid, credit) values(#{userId}, 0)")
+    Boolean create(String userId);
 
-    @Select("select * from user where userid = #{id}")
+    @Select("select * from payment where userid = #{id}")
     Payment queryById(String id);
 }

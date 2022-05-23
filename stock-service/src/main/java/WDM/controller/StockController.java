@@ -4,6 +4,7 @@ package WDM.controller;
 import WDM.pojo.Stock;
 import WDM.service.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import java.util.Map;
 //import static com.alibaba.nacos.api.config.ConfigType.JSON;
 
 @RestController
+@EnableEurekaClient
 @RequestMapping("stock")
 public class StockController {
     @Autowired
@@ -30,7 +32,7 @@ public class StockController {
         if (stock == null) {
             map.put("400", "item not found!");
         } else {
-            map.put("stock", stock.getNumber());
+            map.put("stock", stock.getAmount());
             map.put("price", stock.getPrice());
         }
         return map;

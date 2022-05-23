@@ -22,8 +22,13 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public String create() {
         String id = UUID.randomUUID().toString();
-        paymentMapper.create();
-        return id;
+        if(paymentMapper.create(id) == Boolean.TRUE){
+            return id;
+        }
+        else{
+            return "400: fail to create user";
+        }
+
     }
 
     @Override

@@ -7,9 +7,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("Payment")
+@RequestMapping("payment")
 public class PaymentController {
 
     @Autowired
@@ -19,8 +20,8 @@ public class PaymentController {
 //    POST - adds funds (amount) to the user’s (user_id) account
 //    Output JSON fields:
 //            “done” (true/false)
-    @PostMapping("add/{id}/{amount}")
-    public String add(@PathVariable String id, @PathVariable int amount) {
+    @PostMapping("add_funds/{id}/{amount}")
+    public String add(@PathVariable("id") String id, @PathVariable("amount") int amount) {
         if (paymentService.add(id, amount) == Boolean.TRUE) {
             return "200";
         } else {
@@ -45,8 +46,8 @@ public class PaymentController {
 //            “user_id” - the user’s id
 //            “credit” - the user’s credit
     @GetMapping("find_user/{user_id}")
-    public Map<String, Object> queryById(@PathVariable String id) {
-        Payment user = paymentService.queryById(id);
+    public Map<String, Object> queryById(@PathVariable("user_id") String user_id) {
+        Payment user = paymentService.queryById(user_id);
         Map<String, Object> map = new HashMap<>(2);
         if (user == null) {
             map.put("400", "item not found!");

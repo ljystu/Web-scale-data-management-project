@@ -1,2 +1,19 @@
 server:
-  port: 8088
+  port: 8081
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/order?useSSL=false
+    username: postgres
+    password: postgresql
+    driver-class-name: org.postgresql.Driver
+  application:
+    name: orderservice
+
+mybatis:
+  type-aliases-package: WDM.pojo
+  configuration:
+    map-underscore-to-camel-case: true
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8088/eureka

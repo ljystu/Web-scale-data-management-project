@@ -1,6 +1,4 @@
 package WDM.service;
-
-
 import WDM.pojo.Stock;
 
 public interface StockService {
