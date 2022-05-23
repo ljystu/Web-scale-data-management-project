@@ -1,0 +1,13 @@
+server:
+  port: 8083
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/Payment?useSSL=false
+    username: postgres
+    password: Postgresql
+    driver-class-name: org.postgresql.Driver
+
+mybatis:
+  type-aliases-package: WDM.pojo
+  configuration:
+    map-underscore-to-camel-case: true

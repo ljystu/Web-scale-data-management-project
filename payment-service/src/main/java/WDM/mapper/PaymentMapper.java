@@ -7,10 +7,10 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
-@Repository
+
 public interface PaymentMapper {
 
-    @Update("update user set credit = credit + #{funds} where userid = #{id}")
+    @Update("update payment set credit = credit + #{funds} where userid = #{id}")
     Boolean add(String id, int funds);
 
     @Insert("insert into user(userid, credit) values(#{id}, 0)")
