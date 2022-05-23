@@ -67,7 +67,5 @@ public class StockController {
     @PostMapping("item/create/{price}")
     public String create(@PathVariable double price) {
         return stockService.create(price);
-
     }
-
 }
