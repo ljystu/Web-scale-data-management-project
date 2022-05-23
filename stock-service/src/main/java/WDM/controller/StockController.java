@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.alibaba.nacos.api.config.ConfigType.JSON;
+//import static com.alibaba.nacos.api.config.ConfigType.JSON;
 
 @RestController
 @RequestMapping("stock")
