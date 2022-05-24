@@ -4,15 +4,21 @@ package WDM.service.Impl;
 import WDM.mapper.OrderMapper;
 import WDM.pojo.Order;
 import WDM.service.OrderService;
+import feign.clients.StockClient;
+import feign.pojo.Stock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.Element;
 import java.util.UUID;
 
 @Service
 public class OrderServiceImpl implements OrderService {
     @Autowired
-    OrderMapper orderMapper;
+    private OrderMapper orderMapper;
+
+    @Autowired
+    private StockClient stockClient;
 
     /**
      * @param userId
@@ -54,8 +60,15 @@ public class OrderServiceImpl implements OrderService {
         //need Feign to call stock service.
         // get price of itemid
         //        double price = ;
-//        return orderMapper.addItem(orderId, itemId, price) == Boolean.TRUE;
-        return Boolean.TRUE;
+
+        if (orderMapper.findItem(orderId).contains(itemId)) {
+            orderMapper.updateAmount(itemId);
+        } else {
+            Stock stock = stockClient.findPrice(itemId);
+            orderMapper.addItem(orderId, itemId, stock.getPrice());
+        }
+        return true;
+//        return Boolean.TRUE;
     }
 
     /**
@@ -66,5 +79,14 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Boolean removeItem(String orderId, String itemId) {
         return orderMapper.removeItem(orderId, itemId) == Boolean.TRUE;
+    }
+
+    /**
+     * @param orderId
+     * @return
+     */
+    @Override
+    public String checkout(String orderId) {
+        return null;
     }
 }

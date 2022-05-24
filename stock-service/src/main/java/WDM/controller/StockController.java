@@ -25,8 +25,8 @@ public class StockController {
     //            “stock” - the item’s stock
     //            “price” - the item’s price
 
-    @GetMapping("find/{id}")
-    public Map<String, Object> queryById(@PathVariable String id) {
+        @GetMapping("find/{itemId}")
+    public Map<String, Object> queryById(@PathVariable("itemId") String id) {
         Stock stock = stockService.queryById(id);
         Map<String, Object> map = new HashMap<>(2);
         if (stock == null) {
@@ -40,8 +40,8 @@ public class StockController {
 
     //    /stock/subtract/{item_id}/{amount}
     //    POST - subtracts an item from stock by the amount specified.
-    @PostMapping("subtract/{id}/{amount}")
-    public String subtract(@PathVariable String id, @PathVariable int amount) {
+    @PostMapping("subtract/{itemId}/{amount}")
+    public String subtract(@PathVariable("itemId") String id, @PathVariable("amount") int amount) {
         if (stockService.subtract(id, amount) == Boolean.TRUE) {
             return "200";
         } else {
@@ -51,8 +51,8 @@ public class StockController {
 
     ///stock/add/{item_id}/{amount}
     //    POST - adds the given number of stock items to the item count in the stock
-    @PostMapping("add/{id}/{amount}")
-    public String add(@PathVariable String id, @PathVariable int amount) {
+    @PostMapping("add/{itemId}/{amount}")
+    public String add(@PathVariable("itemId") String id, @PathVariable("amount") int amount) {
         if (stockService.add(id, amount) == Boolean.TRUE) {
             return "200";
         } else {
@@ -65,7 +65,7 @@ public class StockController {
     //    Output JSON fields:
     //            “item_id” - the item’s id
     @PostMapping("item/create/{price}")
-    public String create(@PathVariable double price) {
+    public String create(@PathVariable("price") double price) {
         return stockService.create(price);
     }
 }

@@ -4,6 +4,9 @@ import WDM.pojo.Order;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
+
+import java.util.List;
 
 
 public interface OrderMapper {
@@ -15,6 +18,13 @@ public interface OrderMapper {
     //    DELETE - deletes an order by ID
     @Delete({"delete from orderinfo where orderid = #{orderId}", "delete from orderitem where orderid = #{orderId}"})
     Boolean removeOrder(String orderId);
+
+    @Select("select itemid from orderitem where orderid = #{orderId}")
+    List<String> findItem(String orderId);
+
+    @Update("update orderitem set amount = amount + 1 where itemid = #{itemId}")
+    Boolean updateAmount(String itemId);
+
 
     ///orders/find/{order_id}
     //    GET - retrieves the information of an order (id, payment status, items included and user id)
