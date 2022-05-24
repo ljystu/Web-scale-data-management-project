@@ -1,7 +1,9 @@
 package WDM.service.Impl;
 
 
+import WDM.mapper.ItemMapper;
 import WDM.mapper.OrderMapper;
+import WDM.pojo.Item;
 import WDM.pojo.Order;
 import WDM.service.OrderService;
 import feign.clients.StockClient;
@@ -18,6 +20,9 @@ public class OrderServiceImpl implements OrderService {
     private OrderMapper orderMapper;
 
     @Autowired
+    private ItemMapper itemMapper;
+
+    @Autowired
     private StockClient stockClient;
 
     /**
@@ -27,8 +32,13 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public String createOrder(String userId) {
         String orderId = UUID.randomUUID().toString();
-        orderMapper.createOrder(userId, orderId);
-        return orderId;
+        if(orderMapper.createOrder(userId, orderId) == Boolean.TRUE){
+            return orderId;
+        }
+        else{
+            return "400";
+        }
+
     }
 
     /**
@@ -47,6 +57,12 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order findOrder(String orderId) {
         Order order = orderMapper.findOrder(orderId);
+        order.setItems(itemMapper.findItem(orderId));
+        double cost = 0;
+        for (Item item : order.getItems()) {
+            cost += (item.getAmount() * item.getPrice());
+        }
+        order.setTotalCost(cost);
         return order;
     }
 
@@ -59,16 +75,15 @@ public class OrderServiceImpl implements OrderService {
     public Boolean addItem(String orderId, String itemId) {
         //need Feign to call stock service.
         // get price of itemid
-        //        double price = ;
-
-        if (orderMapper.findItem(orderId).contains(itemId)) {
-            orderMapper.updateAmount(itemId);
-        } else {
-            Stock stock = stockClient.findPrice(itemId);
-            orderMapper.addItem(orderId, itemId, stock.getPrice());
+        for (Item item : itemMapper.findItem(orderId)) {
+            if (item.getItemId().equals(itemId)) {
+                itemMapper.updateAmount(itemId);
+                return true;
+            }
         }
+        Stock stock = stockClient.findPrice(itemId);
+        itemMapper.addItem(orderId, itemId, stock.getPrice());
         return true;
-//        return Boolean.TRUE;
     }
 
     /**
@@ -78,7 +93,7 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public Boolean removeItem(String orderId, String itemId) {
-        return orderMapper.removeItem(orderId, itemId) == Boolean.TRUE;
+        return itemMapper.removeItem(orderId, itemId) == Boolean.TRUE;
     }
 
     /**
