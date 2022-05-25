@@ -5,7 +5,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/Payment?useSSL=false
     username: postgres
-    password: postgresql
+    password: Postgresql
     driver-class-name: org.postgresql.Driver
   application:
     name: paymentservice

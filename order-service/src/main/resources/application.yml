@@ -2,9 +2,9 @@ server:
   port: 8081
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/order?useSSL=false
+    url: jdbc:postgresql://localhost:5432/Order?useSSL=false
     username: postgres
-    password: postgresql
+    password: Postgresql
     driver-class-name: org.postgresql.Driver
   application:
     name: orderservice

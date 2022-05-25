@@ -42,7 +42,12 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>WDM</groupId>
+            <artifactId>order-service</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
         <!--feign客户端依赖-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -54,11 +59,13 @@
             <artifactId>feign-httpclient</artifactId>
         </dependency>
         <!--引入feign的统一api-->
-        <!--        <dependency>-->
-        <!--            <groupId>WDM</groupId>-->
-        <!--            <artifactId>feign-api</artifactId>-->
-        <!--            <version>1.0</version>-->
-        <!--        </dependency>-->
+        <!--引入feign的统一api-->
+        <dependency>
+            <groupId>WDM</groupId>
+            <artifactId>feign-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
     <build>
         <finalName>app</finalName>

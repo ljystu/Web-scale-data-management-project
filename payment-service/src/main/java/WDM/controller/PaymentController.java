@@ -20,13 +20,37 @@ public class PaymentController {
     //    /payment/pay/{user_id}/{order_id}/{amount}
 //    POST - subtracts the amount of the order from the user’s credit (returns failure if credit is not enough)
     @PostMapping("pay/{user_id}/{order_id}/{amount}")
-    public String pay(@PathVariable("userid") String userid, @PathVariable("amount") int amount){
+    public String pay(@PathVariable("user_id") String userid, @PathVariable("amount") int amount){
         if (paymentService.pay(userid, amount) == Boolean.TRUE) {
             return "200";
         } else {
             return "400";
         }
     }
+///payment/cancel/{user_id}/{order_id}
+//    POST - cancels payment made by a specific user for a specific order.
+    @PostMapping("cancel/{user_id}/{order_id}")
+    public String cancel(@PathVariable("user_id") String userid, @PathVariable("order_id") String orderid){
+        if (paymentService.cancel(userid, orderid) == Boolean.TRUE) {
+            return "200";
+        } else {
+            return "400";
+        }
+    }
+
+//    /payment/status/{user_id}/{order_id}
+//    GET - returns the status of the payment (paid or not)
+//    Output JSON fields:
+//            “paid” (true/false)
+    @GetMapping("status/{user_id}/{order_id}")
+    public Boolean status(@PathVariable("user_id") String userid, @PathVariable("order_id") String orderid){
+        if (paymentService.status(userid, orderid) == Boolean.TRUE) {
+            return Boolean.TRUE;
+        } else {
+            return Boolean.FALSE;
+        }
+    }
+
 
     //    /payment/add_funds/{user_id}/{amount}
 //    POST - adds funds (amount) to the user’s (user_id) account
