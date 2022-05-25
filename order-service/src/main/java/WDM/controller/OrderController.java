@@ -71,6 +71,8 @@ public class OrderController {
     //    POST - makes the payment (via calling the payment service), subtracts the stock (via the stock service) and returns a status (success/failure).
     @PostMapping("checkout/{orderId}")
     public String checkout(@PathVariable("orderId") String orderId) {
+        Order order = orderService.findOrder(orderId);
+        orderService.checkout(order);
 //        if (orderService.check(orderId, itemId)) {
 //            return "200";
 //        } else {

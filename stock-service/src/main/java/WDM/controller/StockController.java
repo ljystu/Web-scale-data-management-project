@@ -25,7 +25,7 @@ public class StockController {
     //            “stock” - the item’s stock
     //            “price” - the item’s price
 
-        @GetMapping("find/{itemId}")
+    @GetMapping("find/{itemId}")
     public Map<String, Object> queryById(@PathVariable("itemId") String id) {
         Stock stock = stockService.queryById(id);
         Map<String, Object> map = new HashMap<>(2);

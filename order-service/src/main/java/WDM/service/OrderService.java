@@ -23,6 +23,6 @@ public interface OrderService {
 
     ///orders/checkout/{order_id}
     //    POST - makes the payment (via calling the payment service), subtracts the stock (via the stock service) and returns a status (success/failure).
-    String checkout(String orderId);
+    String checkout(Order order);
 
 }

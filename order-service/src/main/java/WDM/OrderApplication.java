@@ -16,6 +16,6 @@ import java.util.Scanner;
 @EnableFeignClients(clients = {StockClient.class})
 public class OrderApplication {
     public static void main(String[] args) {
-        SpringApplication.run(OrderApplication.class,args);
+        SpringApplication.run(OrderApplication.class, args);
     }
 }

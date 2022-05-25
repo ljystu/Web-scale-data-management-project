@@ -11,7 +11,6 @@ import feign.pojo.Stock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.Element;
 import java.util.UUID;
 
 @Service
@@ -97,11 +96,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * @param orderId
+     * @param order
      * @return
      */
     @Override
-    public String checkout(String orderId) {
+    public String checkout(Order order) {
+
+
         return null;
     }
 }
