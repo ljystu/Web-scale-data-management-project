@@ -2,9 +2,9 @@ server:
   port: 8082
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/stock?useSSL=false
+    url: jdbc:postgresql://localhost:5432/Stock?useSSL=false
     username: postgres
-    password: Postgresql
+    password: postgresql
     driver-class-name: org.postgresql.Driver
   application:
     name: stockservice
