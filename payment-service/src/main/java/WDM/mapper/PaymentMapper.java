@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 public interface PaymentMapper {
 
     @Update("update payment set credit = credit - #{funds} where userid = #{id}")
-    Boolean pay(String id, int funds);
+    Boolean pay(String id, double funds);
 
 
 

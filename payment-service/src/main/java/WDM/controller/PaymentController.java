@@ -20,8 +20,8 @@ public class PaymentController {
     //    /payment/pay/{user_id}/{order_id}/{amount}
 //    POST - subtracts the amount of the order from the user’s credit (returns failure if credit is not enough)
     @PostMapping("pay/{user_id}/{order_id}/{amount}")
-    public String pay(@PathVariable("user_id") String userid, @PathVariable("amount") int amount){
-        if (paymentService.pay(userid, amount) == Boolean.TRUE) {
+    public String pay(@PathVariable("user_id") String userid,  @PathVariable("order_id") String orderId,@PathVariable("amount") double amount){
+        if (paymentService.pay(userid, amount)) {
             return "200";
         } else {
             return "400";

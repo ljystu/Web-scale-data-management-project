@@ -1,11 +1,10 @@
 package WDM.service;
 
 import WDM.pojo.Payment;
-import org.springframework.stereotype.Repository;
 
 
 public interface PaymentService {
-    Boolean pay(String id, int funds);
+    Boolean pay(String id, double funds);
 
     Boolean cancel(String userid, String orderid);
 

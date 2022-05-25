@@ -6,6 +6,7 @@ import WDM.mapper.OrderMapper;
 import WDM.pojo.Item;
 import WDM.pojo.Order;
 import WDM.service.OrderService;
+import feign.clients.PaymentClient;
 import feign.clients.StockClient;
 import feign.pojo.Stock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private StockClient stockClient;
 
+    @Autowired
+    private PaymentClient paymentClient;
+
     /**
      * @param userId
      * @return
@@ -31,10 +35,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public String createOrder(String userId) {
         String orderId = UUID.randomUUID().toString();
-        if(orderMapper.createOrder(userId, orderId) == Boolean.TRUE){
+        if (orderMapper.createOrder(userId, orderId)) {
             return orderId;
-        }
-        else{
+        } else {
             return "400";
         }
 
@@ -46,7 +49,7 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public Boolean removeOrder(String orderId) {
-        return orderMapper.removeOrder(orderId) == Boolean.TRUE;
+        return orderMapper.removeOrder(orderId);
     }
 
     /**
@@ -92,7 +95,7 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public Boolean removeItem(String orderId, String itemId) {
-        return itemMapper.removeItem(orderId, itemId) == Boolean.TRUE;
+        return itemMapper.removeItem(orderId, itemId);
     }
 
     /**
@@ -100,9 +103,12 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
-    public String checkout(Order order) {
-
-
-        return null;
+    public Boolean checkout(Order order) {
+        //how to rollback when error
+        paymentClient.pay(order.getUserId(), order.getOrderId(), order.getTotalCost());
+        for (Item item : order.getItems()) {
+            stockClient.subtract(item.getItemId(), item.getAmount());
+        }
+        return true;
     }
 }
