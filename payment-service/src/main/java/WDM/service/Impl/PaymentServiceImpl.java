@@ -15,6 +15,11 @@ public class PaymentServiceImpl implements PaymentService {
     PaymentMapper paymentMapper;
 
     @Override
+    public Boolean pay(String id, int funds) {
+        return paymentMapper.pay(id,funds)==Boolean.TRUE;
+    }
+
+    @Override
     public Boolean add(String id, int funds) {
         return paymentMapper.add(id,funds)==Boolean.TRUE;
     }

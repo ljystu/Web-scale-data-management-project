@@ -16,6 +16,18 @@ public class PaymentController {
     @Autowired
     private PaymentService paymentService;
 
+
+    //    /payment/pay/{user_id}/{order_id}/{amount}
+//    POST - subtracts the amount of the order from the user’s credit (returns failure if credit is not enough)
+    @PostMapping("pay/{user_id}/{order_id}/{amount}")
+    public String pay(@PathVariable("userid") String userid, @PathVariable("amount") int amount){
+        if (paymentService.pay(userid, amount) == Boolean.TRUE) {
+            return "200";
+        } else {
+            return "400";
+        }
+    }
+
     //    /payment/add_funds/{user_id}/{amount}
 //    POST - adds funds (amount) to the user’s (user_id) account
 //    Output JSON fields:
