@@ -1,10 +1,11 @@
 package WDM.service;
 import WDM.pojo.Stock;
+import io.seata.core.exception.TransactionException;
 
 public interface StockService {
     Stock queryById(String id);
 
-    Boolean subtract(String id, int amount);
+    Boolean subtract(String id, int amount) throws TransactionException;
 
     Boolean add(String id, int amount);
 

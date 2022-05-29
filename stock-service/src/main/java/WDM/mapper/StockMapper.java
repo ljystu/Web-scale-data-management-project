@@ -10,7 +10,7 @@ public interface StockMapper {
     @Select("select * from stock where itemid = #{id}")
     Stock queryById(String id);
 
-    @Update("update stock set amount = amount - #{num} where itemid = #{id} and amount >= #{num}")
+    @Update("update stock set amount = amount - #{num} where itemid = #{id}")
     Boolean subtract(String id, int num);
 
     @Update("update stock set amount = amount + #{num} where itemid = #{id}")

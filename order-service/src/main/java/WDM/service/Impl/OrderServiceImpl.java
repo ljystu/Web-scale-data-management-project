@@ -6,14 +6,23 @@ import WDM.mapper.OrderMapper;
 import WDM.pojo.Item;
 import WDM.pojo.Order;
 import WDM.service.OrderService;
+import feign.FeignException;
 import feign.clients.PaymentClient;
 import feign.clients.StockClient;
 import feign.pojo.Stock;
+import io.seata.core.context.RootContext;
+import io.seata.core.exception.TransactionException;
+import io.seata.spring.annotation.GlobalTransactional;
+
+import io.seata.tm.api.GlobalTransactionContext;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class OrderServiceImpl implements OrderService {
     @Autowired
@@ -57,6 +66,7 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
+    @Transactional
     public Order findOrder(String orderId) {
         Order order = orderMapper.findOrder(orderId);
         order.setItems(itemMapper.findItem(orderId));
@@ -103,11 +113,21 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
-    public Boolean checkout(Order order) {
+    @GlobalTransactional(rollbackFor = Exception.class)
+    public Boolean checkout(Order order) throws TransactionException {
         //how to rollback when error
-        paymentClient.pay(order.getUserId(), order.getOrderId(), order.getTotalCost());
-        for (Item item : order.getItems()) {
-            stockClient.subtract(item.getItemId(), item.getAmount());
+        try {
+            String XID = RootContext.getXID();
+            paymentClient.pay(order.getUserId(), order.getOrderId(), order.getTotalCost());
+            for (Item item : order.getItems()) {
+                stockClient.subtract(item.getItemId(), item.getAmount());
+            }
+        } catch (Exception e) {
+            log.error("checkout failed:{}", e.getCause(), e);
+            log.info("Seata global transaction id=================>{}", RootContext.getXID());
+
+            GlobalTransactionContext.reload(RootContext.getXID()).rollback();
+            return false;
         }
         return true;
     }

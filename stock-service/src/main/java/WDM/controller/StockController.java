@@ -3,6 +3,7 @@ package WDM.controller;
 
 import WDM.pojo.Stock;
 import WDM.service.StockService;
+import io.seata.core.exception.TransactionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.web.bind.annotation.*;
@@ -41,8 +42,8 @@ public class StockController {
     //    /stock/subtract/{item_id}/{amount}
     //    POST - subtracts an item from stock by the amount specified.
     @PostMapping("subtract/{itemId}/{amount}")
-    public String subtract(@PathVariable("itemId") String id, @PathVariable("amount") int amount) {
-        if (stockService.subtract(id, amount) == Boolean.TRUE) {
+    public String subtract(@PathVariable("itemId") String id, @PathVariable("amount") int amount) throws TransactionException {
+        if (stockService.subtract(id, amount)) {
             return "200";
         } else {
             return "400";

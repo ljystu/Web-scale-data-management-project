@@ -11,13 +11,12 @@
 
     <artifactId>order-service</artifactId>
 
-<!--    <properties>-->
-<!--        <maven.compiler.source>17</maven.compiler.source>-->
-<!--        <maven.compiler.target>17</maven.compiler.target>-->
-<!--    </properties>-->
+    <!--    <properties>-->
+    <!--        <maven.compiler.source>17</maven.compiler.source>-->
+    <!--        <maven.compiler.target>17</maven.compiler.target>-->
+    <!--    </properties>-->
 
     <dependencies>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -31,20 +30,30 @@
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
         </dependency>
-        <!--eureka客户端依赖-->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.3.4</version>
         </dependency>
+
+        <!--eureka客户端依赖-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+            <!--            <version>3.1.2</version>-->
+        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>WDM</groupId>-->
+        <!--            <artifactId>order-service</artifactId>-->
+        <!--            <version>1.0-SNAPSHOT</version>-->
+        <!--            <scope>compile</scope>-->
+        <!--        </dependency>-->
         <!--feign客户端依赖-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
+            <!--            <version>3.1.2</version>-->
         </dependency>
         <!--引入HttpClient依赖-->
         <dependency>
@@ -52,17 +61,27 @@
             <artifactId>feign-httpclient</artifactId>
         </dependency>
         <dependency>
-            <groupId>WDM</groupId>
-            <artifactId>stock-service</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
+            <!--            <version>2021.1</version>-->
+            <exclusions>
+                <exclusion>
+                    <artifactId>seata-spring-boot-starter</artifactId>
+                    <groupId>io.seata</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
-            <groupId>WDM</groupId>
-            <artifactId>payment-service</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
+            <groupId>io.seata</groupId>
+            <artifactId>seata-spring-boot-starter</artifactId>
+            <version>1.3.0</version>
         </dependency>
+
+        <!--        <dependency>-->
+        <!--        <groupId>io.seata</groupId>-->
+        <!--        <artifactId>seata-serializer-all</artifactId>-->
+        <!--        <version>1.4.2</version>-->
+        <!--        </dependency>-->
         <!--引入feign的统一api-->
         <dependency>
             <groupId>WDM</groupId>

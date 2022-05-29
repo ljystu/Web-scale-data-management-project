@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 public interface PaymentMapper {
 
-    @Update("update payment set credit = credit - #{funds} where userid = #{id} and credit >= #{funds}")
+    @Update("update payment set credit = credit - #{funds} where userid = #{id}")
     Boolean pay(String id, double funds);
 
     @Update("update payment set credit = credit + #{funds} where userid = #{id}")

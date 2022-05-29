@@ -72,12 +72,14 @@ public class OrderController {
     @PostMapping("checkout/{orderId}")
     public String checkout(@PathVariable("orderId") String orderId) {
         Order order = orderService.findOrder(orderId);
-        orderService.checkout(order);
-//        if (orderService.check(orderId, itemId)) {
-//            return "200";
-//        } else {
-//            return "400";
-//        }
-        return "200";
+        try {
+            if (orderService.checkout(order)) {
+                return "200";
+            } else {
+                return "400";
+            }
+        } catch (Exception e) {
+            return "400";
+        }
     }
 }

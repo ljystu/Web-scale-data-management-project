@@ -2,6 +2,7 @@ package WDM.controller;
 
 import WDM.pojo.Payment;
 import WDM.service.PaymentService;
+import io.seata.core.exception.TransactionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,30 +21,32 @@ public class PaymentController {
     //    /payment/pay/{user_id}/{order_id}/{amount}
 //    POST - subtracts the amount of the order from the user’s credit (returns failure if credit is not enough)
     @PostMapping("pay/{user_id}/{order_id}/{amount}")
-    public String pay(@PathVariable("user_id") String userid,  @PathVariable("order_id") String orderId,@PathVariable("amount") double amount){
+    public String pay(@PathVariable("user_id") String userid, @PathVariable("order_id") String orderId, @PathVariable("amount") double amount) throws TransactionException {
         if (paymentService.pay(userid, amount)) {
             return "200";
         } else {
             return "400";
         }
     }
-///payment/cancel/{user_id}/{order_id}
+
+    ///payment/cancel/{user_id}/{order_id}
 //    POST - cancels payment made by a specific user for a specific order.
     @PostMapping("cancel/{user_id}/{order_id}")
-    public String cancel(@PathVariable("user_id") String userid, @PathVariable("order_id") String orderid){
-        if (paymentService.cancel(userid, orderid) == Boolean.TRUE) {
+    public String cancel(@PathVariable("user_id") String userid, @PathVariable("order_id") String orderid) {
+        try {
+            paymentService.cancel(userid, orderid);
             return "200";
-        } else {
+        } catch (Exception e) {
             return "400";
         }
     }
 
-//    /payment/status/{user_id}/{order_id}
+    //    /payment/status/{user_id}/{order_id}
 //    GET - returns the status of the payment (paid or not)
 //    Output JSON fields:
 //            “paid” (true/false)
     @GetMapping("status/{user_id}/{order_id}")
-    public Boolean status(@PathVariable("user_id") String userid, @PathVariable("order_id") String orderid){
+    public Boolean status(@PathVariable("user_id") String userid, @PathVariable("order_id") String orderid) {
         if (paymentService.status(userid, orderid) == Boolean.TRUE) {
             return Boolean.TRUE;
         } else {

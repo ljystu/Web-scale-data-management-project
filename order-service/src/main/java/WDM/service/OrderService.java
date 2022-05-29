@@ -2,6 +2,8 @@ package WDM.service;
 
 
 import WDM.pojo.Order;
+import io.seata.core.exception.TransactionException;
+//import io.seata.core.exception.TransactionException;
 
 public interface OrderService {
 
@@ -23,6 +25,6 @@ public interface OrderService {
 
     ///orders/checkout/{order_id}
     //    POST - makes the payment (via calling the payment service), subtracts the stock (via the stock service) and returns a status (success/failure).
-    Boolean checkout(Order order);
+    Boolean checkout(Order order) throws TransactionException;
 
 }
