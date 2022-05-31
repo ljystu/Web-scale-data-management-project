@@ -18,6 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 @Slf4j
 @Service
 public class PaymentServiceImpl implements PaymentService {
@@ -33,7 +36,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public Boolean pay(String id, double funds) throws TransactionException {
+    public Boolean pay(String id, double funds) throws FeignException, TransactionException {
 
         log.info("Seata global transaction id=================>{}",RootContext.getXID());
         RootContext.bind(RootContext.getXID());
@@ -42,26 +45,33 @@ public class PaymentServiceImpl implements PaymentService {
         }
         catch (Exception e){
             GlobalTransactionContext.reload(RootContext.getXID()).rollback();
-            throw e;
+//            throw e;
+            return false;
         }
         return true;
     }
-
+    Lock lock = new ReentrantLock();
     @Override
     @GlobalTransactional(rollbackFor = Exception.class)
-    public Boolean cancel(String userid, String orderid) throws TransactionException {
-        //need rollback when one of these 2 service fails
+    public Boolean cancel(String userid, String orderId) throws TransactionException {
         try {
-            Order order = orderClient.findOrder(orderid);
+            lock.lock();
+            Order order = orderClient.findOrder(orderId);
             for (Item item : order.getItems()) {
                 stockClient.add(item.getItemId(), item.getAmount());
             }
-            return paymentMapper.add(userid, (int) order.getTotalCost());
+            paymentMapper.add(userid, (int) order.getTotalCost());
+            orderClient.cancel(orderId);
         } catch (FeignException e) {
-            log.error("checkout failed:{}", e.contentUTF8(), e);
+            log.error("checkout failed:{}", e.getCause(), e);
+            log.info("Seata global transaction id=================>{}", RootContext.getXID());
             GlobalTransactionContext.reload(RootContext.getXID()).rollback();
             return false;
         }
+        finally {
+            lock.unlock();
+        }
+        return true;
     }
 
     @Override
@@ -71,14 +81,14 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public Boolean add(String id, int funds) {
-        return paymentMapper.add(id, funds) == Boolean.TRUE;
+    public Boolean add(String id, double funds) {
+        return paymentMapper.add(id, funds);
     }
 
     @Override
     public String create() {
         String id = UUID.randomUUID().toString();
-        if (paymentMapper.create(id) == Boolean.TRUE) {
+        if (paymentMapper.create(id)) {
             return id;
         } else {
             return "400: fail to create user";

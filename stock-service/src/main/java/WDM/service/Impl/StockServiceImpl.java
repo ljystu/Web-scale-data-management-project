@@ -3,7 +3,7 @@ package WDM.service.Impl;
 import WDM.mapper.StockMapper;
 import WDM.pojo.Stock;
 import WDM.service.StockService;
-import com.fasterxml.jackson.databind.deser.std.UUIDDeserializer;
+import feign.FeignException;
 import io.seata.core.context.RootContext;
 import io.seata.core.exception.TransactionException;
 import io.seata.tm.api.GlobalTransactionContext;
@@ -18,18 +18,18 @@ import java.util.UUID;
 @Service
 public class StockServiceImpl implements StockService {
 
-
     @Autowired
     StockMapper stockMapper;
 
     @Override
+    @Transactional
     public Stock queryById(String id) {
         return stockMapper.queryById(id);
     }
 
     @Override
     @Transactional
-    public Boolean subtract(String id, int amount) throws TransactionException {
+    public Boolean subtract(String id, int amount) throws TransactionException, FeignException {
 
         log.info("Seata global transaction id=================>{}", RootContext.getXID());
         RootContext.bind(RootContext.getXID());
@@ -37,7 +37,8 @@ public class StockServiceImpl implements StockService {
             stockMapper.subtract(id, amount);
         } catch (Exception e) {
             GlobalTransactionContext.reload(RootContext.getXID()).rollback();
-            throw e;
+            log.info("Stock exception: Seata global transaction id=================>{}",RootContext.getXID());
+            return false;
         }
         return true;
     }

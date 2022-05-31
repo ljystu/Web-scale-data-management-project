@@ -12,7 +12,7 @@ public interface ItemMapper {
     @Update("update orderitem set amount = amount + 1 where itemid = #{itemId}")
     Boolean updateAmount(String itemId);
 
-    @Select("select orderid, itemid, price, amount from orderitem where orderid = #{orderId}; ")
+    @Select("select orderid, itemid, price, amount from orderitem where orderid = #{orderId} for update ; ")
     List<Item> findItem(String orderId);
 
     ///orders/addItem/{order_id}/{item_id}
@@ -23,7 +23,7 @@ public interface ItemMapper {
 
     ///orders/removeItem/{order_id}/{item_id}
     //    DELETE - removes the given item from the given order
-    @Delete("delete * from orderitem where orderid = #{orderId} and itemid = #{itemId};")
+    @Delete("delete from orderitem where orderid = #{orderId} and itemid = #{itemId};")
     Boolean removeItem(String orderId, String itemId);
 
 }

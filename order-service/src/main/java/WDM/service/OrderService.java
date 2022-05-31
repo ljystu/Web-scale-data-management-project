@@ -27,4 +27,5 @@ public interface OrderService {
     //    POST - makes the payment (via calling the payment service), subtracts the stock (via the stock service) and returns a status (success/failure).
     Boolean checkout(Order order) throws TransactionException;
 
+    void cancelOrder(String orderId);
 }

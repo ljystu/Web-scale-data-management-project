@@ -66,7 +66,10 @@ public class StockController {
     //    Output JSON fields:
     //            “item_id” - the item’s id
     @PostMapping("item/create/{price}")
-    public String create(@PathVariable("price") double price) {
-        return stockService.create(price);
+    public Map<String, String> create(@PathVariable("price") double price) {
+        String itemId = stockService.create(price);
+        Map<String, String> map = new HashMap<>();
+        map.put("item_id", itemId);
+        return map;
     }
 }

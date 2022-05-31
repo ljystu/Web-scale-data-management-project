@@ -10,6 +10,6 @@ public class Order {
     private double totalCost;
     private boolean paid;
     private String userId;
-    private List<Item> items;
+    private List<String> items;
 }
 

@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("payment")
@@ -46,12 +45,14 @@ public class PaymentController {
 //    Output JSON fields:
 //            “paid” (true/false)
     @GetMapping("status/{user_id}/{order_id}")
-    public Boolean status(@PathVariable("user_id") String userid, @PathVariable("order_id") String orderid) {
-        if (paymentService.status(userid, orderid) == Boolean.TRUE) {
-            return Boolean.TRUE;
+    public Map<String, String> status(@PathVariable("user_id") String userid, @PathVariable("order_id") String orderid) {
+        Map<String, String> map = new HashMap<>();
+        if (paymentService.status(userid, orderid)) {
+            map.put("paid", "true");
         } else {
-            return Boolean.FALSE;
+            map.put("paid", "false");
         }
+        return map;
     }
 
 
@@ -59,13 +60,15 @@ public class PaymentController {
 //    POST - adds funds (amount) to the user’s (user_id) account
 //    Output JSON fields:
 //            “done” (true/false)
-    @PostMapping("add_funds/{id}/{amount}")
-    public String add(@PathVariable("id") String id, @PathVariable("amount") int amount) {
-        if (paymentService.add(id, amount) == Boolean.TRUE) {
-            return "200";
+    @PostMapping("add_funds/{user_id}/{amount}")
+    public Map<String, String> add(@PathVariable("user_id") String id, @PathVariable("amount") double amount) {
+        Map<String, String> map = new HashMap<>();
+        if (paymentService.add(id, amount)) {
+            map.put("done", "true");
         } else {
-            return "400";
+            map.put("done", "false");
         }
+        return map;
     }
 
 
@@ -74,8 +77,11 @@ public class PaymentController {
 //    Output JSON fields:
 //            “user_id” - the user’s id
     @PostMapping("create_user")
-    public String create() {
-        return paymentService.create();
+    public Map<String, String> create() {
+        String userId = paymentService.create();
+        Map<String, String> map = new HashMap<>();
+        map.put("user_id", userId);
+        return map;
     }
 
 
@@ -92,7 +98,7 @@ public class PaymentController {
             map.put("400", "item not found!");
         } else {
             map.put("user_id", user.getUserId());
-            map.put("credits", user.getCredit());
+            map.put("credit", user.getCredit());
         }
         return map;
     }

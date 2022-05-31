@@ -2,8 +2,15 @@ package WDM.controller;
 
 import WDM.pojo.Order;
 import WDM.service.OrderService;
+import com.alibaba.fastjson.serializer.MapSerializer;
+import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @RestController
 @RequestMapping("orders")
@@ -17,13 +24,17 @@ public class OrderController {
     //    Output JSON fields:
     //            “order_id”  - the order’s id
     @PostMapping("create/{userId}")
-    public String createOrder(@PathVariable("userId") String userId) {
-        return orderService.createOrder(userId);
+    public Map<String, String> createOrder(@PathVariable("userId") String userId) {
+        Map<String, String> map = new HashMap<>();
+        String orderId = orderService.createOrder(userId);
+        map.put("order_id", orderId);
+        return map;
+
     }
 
     ///orders/remove/{order_id}
     //    DELETE - deletes an order by ID
-    @PostMapping("remove/{orderId}")
+    @DeleteMapping("remove/{orderId}")
     public String removeOrder(@PathVariable("orderId") String orderId) {
         if (orderService.removeOrder(orderId)) {
             return "200";
@@ -58,7 +69,7 @@ public class OrderController {
 
     ///orders/removeItem/{order_id}/{item_id}
     //    DELETE - removes the given item from the given order
-    @PostMapping("removeItem/{orderId}/{itemId}")
+    @DeleteMapping("removeItem/{orderId}/{itemId}")
     public String removeItem(@PathVariable("orderId") String orderId, @PathVariable("itemId") String itemId) {
         if (orderService.removeItem(orderId, itemId)) {
             return "200";
@@ -66,13 +77,14 @@ public class OrderController {
             return "400";
         }
     }
-
+    Lock lock = new ReentrantLock();
     ///orders/checkout/{order_id}
     //    POST - makes the payment (via calling the payment service), subtracts the stock (via the stock service) and returns a status (success/failure).
     @PostMapping("checkout/{orderId}")
     public String checkout(@PathVariable("orderId") String orderId) {
-        Order order = orderService.findOrder(orderId);
         try {
+            lock.lock();
+            Order order = orderService.findOrder(orderId);
             if (orderService.checkout(order)) {
                 return "200";
             } else {
@@ -81,5 +93,14 @@ public class OrderController {
         } catch (Exception e) {
             return "400";
         }
+        finally {
+            lock.unlock();
+        }
+    }
+
+    @PostMapping("cancel/{orderId}")
+    public void cancel(@PathVariable("orderId") String orderId) {
+        orderService.cancelOrder(orderId);
+
     }
 }

@@ -13,7 +13,7 @@ mybatis:
   type-aliases-package: WDM.pojo
   configuration:
     map-underscore-to-camel-case: true
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 eureka:
   client:
     service-url:
@@ -27,4 +27,13 @@ seata:
       default: 127.0.0.1:8091
   enabled: true
   data-source-proxy-mode: AT
+  client:
+    rm:
+      lock:
+        retry-times: 20
+        retry-interval: 300
 
+feign:
+  httpclient:
+    connection-timeout: 6000
+    connection-timer-repeat: 3000

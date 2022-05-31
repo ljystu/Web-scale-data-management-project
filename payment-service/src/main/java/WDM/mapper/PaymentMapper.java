@@ -14,7 +14,7 @@ public interface PaymentMapper {
     Boolean pay(String id, double funds);
 
     @Update("update payment set credit = credit + #{funds} where userid = #{id}")
-    Boolean add(String id, int funds);
+    Boolean add(String id, double funds);
 
     @Insert("insert into payment(userid, credit) values(#{userId}, 0)")
     Boolean create(String userId);

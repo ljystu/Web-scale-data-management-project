@@ -28,13 +28,16 @@ public interface OrderMapper {
     //            “items”  - list of item ids that are included in the order
     //            “user_id”  - the user’s id that made the order
     //            “total_cost” - the total cost of the items in the order
-    @Select("select * from orderinfo where orderid = #{orderId};")
+    @Select("select * from orderinfo where orderid = #{orderId} for update ;")
     Order findOrder(String orderId);
 
 
     ///orders/checkout/{order_id}
     // add one new column "amount" to orderitem to indicate purchase amount (makes comparison easier.)
     //    POST - makes the payment (via calling the payment service), subtracts the stock (via the stock service) and returns a status (success/failure).
+    @Update("update orderinfo set paid = true where orderid = #{orderId}")
+    void checkout(String orderId);
 
-//    Boolean checkout(String orderId);
+    @Update("update orderinfo set paid = false where orderid = #{orderId")
+    void cancelOrder(String orderId);
 }
