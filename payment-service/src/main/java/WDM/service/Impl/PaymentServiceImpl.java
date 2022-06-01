@@ -10,6 +10,7 @@ import feign.clients.StockClient;
 import feign.pojo.Order;
 import io.seata.core.context.RootContext;
 import io.seata.core.exception.TransactionException;
+import io.seata.spring.annotation.GlobalLock;
 import io.seata.spring.annotation.GlobalTransactional;
 import io.seata.tm.api.GlobalTransactionContext;
 import lombok.extern.slf4j.Slf4j;
@@ -38,19 +39,21 @@ public class PaymentServiceImpl implements PaymentService {
     @Transactional
     public Boolean pay(String id, double funds) throws FeignException, TransactionException {
 
-        log.info("Seata global transaction id=================>{}",RootContext.getXID());
+        log.info("Seata global transaction id=================>{}", RootContext.getXID());
         RootContext.bind(RootContext.getXID());
         try {
             paymentMapper.pay(id, funds);
-        }
-        catch (Exception e){
-            GlobalTransactionContext.reload(RootContext.getXID()).rollback();
+        } catch (Exception e) {
+            log.info("Payment exception: Seata global transaction id=================>{}", RootContext.getXID());
+//            GlobalTransactionContext.reload(RootContext.getXID()).rollback();
 //            throw e;
             return false;
         }
         return true;
     }
+
     Lock lock = new ReentrantLock();
+
     @Override
     @GlobalTransactional(rollbackFor = Exception.class)
     public Boolean cancel(String userid, String orderId) throws TransactionException {
@@ -58,17 +61,20 @@ public class PaymentServiceImpl implements PaymentService {
             lock.lock();
             Order order = orderClient.findOrder(orderId);
             for (Item item : order.getItems()) {
-                stockClient.add(item.getItemId(), item.getAmount());
+                if (stockClient.add(item.getItemId(), item.getAmount()).equals("400")) {
+                    throw new TransactionException("adding stock failed");
+                }
             }
-            paymentMapper.add(userid, (int) order.getTotalCost());
+            if (!paymentMapper.add(userid, (int) order.getTotalCost())) {
+                throw new TransactionException("adding credit failed");
+            }
             orderClient.cancel(orderId);
         } catch (FeignException e) {
             log.error("checkout failed:{}", e.getCause(), e);
             log.info("Seata global transaction id=================>{}", RootContext.getXID());
             GlobalTransactionContext.reload(RootContext.getXID()).rollback();
             return false;
-        }
-        finally {
+        } finally {
             lock.unlock();
         }
         return true;
@@ -81,11 +87,13 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    @Transactional
     public Boolean add(String id, double funds) {
         return paymentMapper.add(id, funds);
     }
 
     @Override
+    @Transactional
     public String create() {
         String id = UUID.randomUUID().toString();
         if (paymentMapper.create(id)) {
@@ -97,6 +105,8 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    @GlobalLock
+    @Transactional
     public Payment queryById(String id) {
         return paymentMapper.queryById(id);
     }

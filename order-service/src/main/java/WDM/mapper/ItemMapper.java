@@ -18,8 +18,8 @@ public interface ItemMapper {
     ///orders/addItem/{order_id}/{item_id}
     //    POST - adds a given item in the order given
     //     need stock API stock/find/{id}
-    @Insert("insert into orderitem(orderid, itemid, price) values(#{orderId}, #{itemId}, #{price}); ")
-    Boolean addItem(String orderId, String itemId, double price);
+    @Insert("insert into orderitem(id, orderid, itemid, price) values(#{id},#{orderId}, #{itemId}, #{price}); ")
+    Boolean addItem(String id, String orderId, String itemId, double price);
 
     ///orders/removeItem/{order_id}/{item_id}
     //    DELETE - removes the given item from the given order

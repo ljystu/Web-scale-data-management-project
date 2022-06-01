@@ -17,6 +17,7 @@ import io.seata.spring.annotation.GlobalLock;
 import io.seata.spring.annotation.GlobalTransactional;
 
 import io.seata.tm.api.GlobalTransactionContext;
+import io.seata.tm.api.TransactionalExecutor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,11 +45,13 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private PaymentClient paymentClient;
 
+
     /**
      * @param userId
      * @return
      */
     @Override
+    @Transactional
     public String createOrder(String userId) {
         String orderId = UUID.randomUUID().toString();
         if (orderMapper.createOrder(userId, orderId)) {
@@ -64,6 +67,7 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
+    @Transactional
     public Boolean removeOrder(String orderId) {
         return orderMapper.removeOrder(orderId);
     }
@@ -108,7 +112,8 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         Stock stock = stockClient.findPrice(itemId);
-        itemMapper.addItem(orderId, itemId, stock.getPrice());
+        String id = UUID.randomUUID().toString();
+        itemMapper.addItem(id, orderId, itemId, stock.getPrice());
         return true;
     }
 
@@ -118,7 +123,7 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
-
+    @Transactional
     public Boolean removeItem(String orderId, String itemId) {
         return itemMapper.removeItem(orderId, itemId);
     }
@@ -127,7 +132,7 @@ public class OrderServiceImpl implements OrderService {
      * @param order
      * @return
      */
-//    Lock lock = new ReentrantLock();
+    Lock lock = new ReentrantLock();
 
     @Override
     @GlobalTransactional(rollbackFor = Exception.class, timeoutMills = 6000000)
@@ -135,14 +140,20 @@ public class OrderServiceImpl implements OrderService {
         //how to rollback when error
 //        Order order = orderMapper.findOrder(orderId);
         try {
+            lock.lock();
 //            String XID = RootContext.getXID();
-             paymentClient.pay(order.getUserId(), order.getOrderId(), order.getTotalCost());
-
+            log.info("Seata global transaction id{}", RootContext.getXID());
             List<Item> items = itemMapper.findItem(order.getOrderId());
             for (Item item : items) {
-                stockClient.subtract(item.getItemId(), item.getAmount());
+                if (stockClient.subtract(item.getItemId(), item.getAmount()).equals("400")) {
+                    throw new TransactionException("stock failed");
+                }
             }
-//            orderMapper.checkout(order.getOrderId());
+            if (paymentClient.pay(order.getUserId(), order.getOrderId(), order.getTotalCost()).equals("400")) {
+                throw new TransactionException("payment failed");
+            }
+            orderMapper.checkout(order.getOrderId());
+            GlobalTransactionContext.reload(RootContext.getXID()).commit();
             return true;
         } catch (Exception e) {
             log.error("checkout failed:{}", e.getMessage(), e);
@@ -150,7 +161,7 @@ public class OrderServiceImpl implements OrderService {
             GlobalTransactionContext.reload(RootContext.getXID()).rollback();
             return false;
         } finally {
-//            lock.unlock();
+            lock.unlock();
         }
 
     }
@@ -159,6 +170,7 @@ public class OrderServiceImpl implements OrderService {
      * @param orderId
      * @return
      */
+    @Transactional
     @Override
     public void cancelOrder(String orderId) {
         orderMapper.cancelOrder(orderId);

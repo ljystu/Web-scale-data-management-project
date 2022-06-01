@@ -11,6 +11,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 //@EnableAutoDataSourceProxy    // 开启seata
 public class StockApplication {
     public static void main(String[] args) {
-        SpringApplication.run(StockApplication.class,args);
+        SpringApplication.run(StockApplication.class, args);
     }
 }

@@ -31,10 +31,11 @@ seata:
   client:
     rm:
       lock:
-        retry-times: 20
-        retry-interval: 300
+        retry-times: 300
+        retry-interval: 100
+  application-id: ${spring.application.name}
+
 feign:
   httpclient:
-    connection-timeout: 6000
+    connection-timeout: 60000
     connection-timer-repeat: 3000
-

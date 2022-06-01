@@ -20,20 +20,22 @@ eureka:
       defaultZone: http://localhost:8088/eureka
 seata:
   tx-service-group: eurekaserver-seata-service-group
+  application-id: ${spring.application.name}
   service:
     vgroupMapping:
       eurekaserver-seata-service-group: default
     grouplist:
       default: 127.0.0.1:8091
   enabled: true
-  data-source-proxy-mode: AT
+  dataSourceProxyMode: AT
   client:
     rm:
       lock:
-        retry-times: 20
-        retry-interval: 300
+        retry-times: 300
+        retry-interval: 100
+
 
 feign:
   httpclient:
-    connection-timeout: 6000
+    connection-timeout: 60000
     connection-timer-repeat: 3000

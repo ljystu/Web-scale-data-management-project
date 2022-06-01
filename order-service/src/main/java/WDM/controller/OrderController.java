@@ -2,9 +2,9 @@ package WDM.controller;
 
 import WDM.pojo.Order;
 import WDM.service.OrderService;
-import com.alibaba.fastjson.serializer.MapSerializer;
-import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -35,11 +35,13 @@ public class OrderController {
     ///orders/remove/{order_id}
     //    DELETE - deletes an order by ID
     @DeleteMapping("remove/{orderId}")
-    public String removeOrder(@PathVariable("orderId") String orderId) {
+    public ResponseEntity removeOrder(@PathVariable("orderId") String orderId) {
         if (orderService.removeOrder(orderId)) {
-            return "200";
+            return new ResponseEntity(HttpStatus.OK);
+//            return "200";
         } else {
-            return "400";
+//            return "400";
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -59,41 +61,42 @@ public class OrderController {
     ///orders/addItem/{order_id}/{item_id}
     //    POST - adds a given item in the order given
     @PostMapping("addItem/{orderId}/{itemId}")
-    public String addItem(@PathVariable("orderId") String orderId, @PathVariable("itemId") String itemId) {
+    public ResponseEntity addItem(@PathVariable("orderId") String orderId, @PathVariable("itemId") String itemId) {
         if (orderService.addItem(orderId, itemId)) {
-            return "200";
+            return new ResponseEntity(HttpStatus.OK);
         } else {
-            return "400";
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
     }
 
     ///orders/removeItem/{order_id}/{item_id}
     //    DELETE - removes the given item from the given order
     @DeleteMapping("removeItem/{orderId}/{itemId}")
-    public String removeItem(@PathVariable("orderId") String orderId, @PathVariable("itemId") String itemId) {
+    public ResponseEntity removeItem(@PathVariable("orderId") String orderId, @PathVariable("itemId") String itemId) {
         if (orderService.removeItem(orderId, itemId)) {
-            return "200";
+            return new ResponseEntity(HttpStatus.OK);
         } else {
-            return "400";
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
     }
+
     Lock lock = new ReentrantLock();
+
     ///orders/checkout/{order_id}
     //    POST - makes the payment (via calling the payment service), subtracts the stock (via the stock service) and returns a status (success/failure).
     @PostMapping("checkout/{orderId}")
-    public String checkout(@PathVariable("orderId") String orderId) {
+    public ResponseEntity checkout(@PathVariable("orderId") String orderId) {
         try {
             lock.lock();
             Order order = orderService.findOrder(orderId);
             if (orderService.checkout(order)) {
-                return "200";
+                return new ResponseEntity(HttpStatus.OK);
             } else {
-                return "400";
+                return new ResponseEntity(HttpStatus.BAD_REQUEST);
             }
         } catch (Exception e) {
-            return "400";
-        }
-        finally {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        } finally {
             lock.unlock();
         }
     }

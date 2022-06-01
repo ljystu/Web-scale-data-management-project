@@ -19,6 +19,6 @@ public interface PaymentMapper {
     @Insert("insert into payment(userid, credit) values(#{userId}, 0)")
     Boolean create(String userId);
 
-    @Select("select * from payment where userid = #{id}")
+    @Select("select * from payment where userid = #{id} for update")
     Payment queryById(String id);
 }

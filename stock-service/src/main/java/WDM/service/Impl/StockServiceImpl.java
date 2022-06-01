@@ -6,6 +6,7 @@ import WDM.service.StockService;
 import feign.FeignException;
 import io.seata.core.context.RootContext;
 import io.seata.core.exception.TransactionException;
+import io.seata.spring.annotation.GlobalLock;
 import io.seata.tm.api.GlobalTransactionContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +37,12 @@ public class StockServiceImpl implements StockService {
         try {
             stockMapper.subtract(id, amount);
         } catch (Exception e) {
-            GlobalTransactionContext.reload(RootContext.getXID()).rollback();
-            log.info("Stock exception: Seata global transaction id=================>{}",RootContext.getXID());
+            log.info("Stock exception: Seata global transaction id=================>{}", RootContext.getXID());
+//            GlobalTransactionContext.reload(RootContext.getXID()).rollback();
+//            throw e;
             return false;
+        } finally {
+
         }
         return true;
     }
@@ -50,6 +54,8 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
+    @Transactional
+    @GlobalLock
     public String create(double price) {
         String id = UUID.randomUUID().toString();
         stockMapper.create(id, price);
