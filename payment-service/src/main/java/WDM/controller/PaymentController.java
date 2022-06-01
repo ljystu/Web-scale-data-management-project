@@ -16,7 +16,6 @@ public class PaymentController {
     @Autowired
     private PaymentService paymentService;
 
-
     //    /payment/pay/{user_id}/{order_id}/{amount}
     //    POST - subtracts the amount of the order from the user’s credit (returns failure if credit is not enough)
     @PostMapping("pay/{user_id}/{order_id}/{amount}")
@@ -55,7 +54,6 @@ public class PaymentController {
         return map;
     }
 
-
     //    /payment/add_funds/{user_id}/{amount}
     //    POST - adds funds (amount) to the user’s (user_id) account
     //    Output JSON fields:
@@ -71,7 +69,6 @@ public class PaymentController {
         return map;
     }
 
-
     //    /payment/create_user
     //    POST - creates a user with 0 credit
     //    Output JSON fields:
@@ -83,7 +80,6 @@ public class PaymentController {
         map.put("user_id", userId);
         return map;
     }
-
 
     //    /payment/find_user/{user_id}
     //    GET - returns the user information
@@ -102,6 +98,5 @@ public class PaymentController {
         }
         return map;
     }
-
 
 }

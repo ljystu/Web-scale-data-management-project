@@ -11,14 +11,8 @@
 
     <artifactId>eureka-server</artifactId>
 
-    <!--    <properties>-->
-    <!--        <maven.compiler.source>17</maven.compiler.source>-->
-    <!--        <maven.compiler.target>17</maven.compiler.target>-->
-    <!--    </properties>-->
-
     <dependencies>
-
-        <!--eureka客户端依赖-->
+        <!-- eureka -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
@@ -40,15 +34,6 @@
             <artifactId>seata-spring-boot-starter</artifactId>
             <version>1.2.0</version>
         </dependency>
-
     </dependencies>
-<!--    <build>-->
-<!--        <finalName>app</finalName>-->
-<!--        <plugins>-->
-<!--            <plugin>-->
-<!--                <groupId>org.springframework.boot</groupId>-->
-<!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
-<!--            </plugin>-->
-<!--        </plugins>-->
-<!--    </build>-->
+
 </project>

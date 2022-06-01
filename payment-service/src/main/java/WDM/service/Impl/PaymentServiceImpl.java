@@ -38,7 +38,6 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional
     public Boolean pay(String id, double funds) throws FeignException, TransactionException {
-
         log.info("Seata global transaction id=================>{}", RootContext.getXID());
         RootContext.bind(RootContext.getXID());
         try {
@@ -101,7 +100,6 @@ public class PaymentServiceImpl implements PaymentService {
         } else {
             return "400: fail to create user";
         }
-
     }
 
     @Override

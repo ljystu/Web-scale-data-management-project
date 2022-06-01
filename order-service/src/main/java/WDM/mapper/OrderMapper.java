@@ -1,13 +1,10 @@
 package WDM.mapper;
 
-import WDM.pojo.Item;
 import WDM.pojo.Order;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
-
-import java.util.List;
 
 
 public interface OrderMapper {

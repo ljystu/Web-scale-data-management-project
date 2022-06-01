@@ -11,11 +11,6 @@
 
     <artifactId>stock-service</artifactId>
 
-    <!--    <properties>-->
-    <!--        <maven.compiler.source>17</maven.compiler.source>-->
-    <!--        <maven.compiler.target>17</maven.compiler.target>-->
-    <!--    </properties>-->
-
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -30,31 +25,23 @@
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.3.4</version>
         </dependency>
-
-         <!--eureka客户端依赖-->
+        <!--eureka-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
             <version>3.1.2</version>
         </dependency>
-        <!-- nacos客户端依赖包 -->
-<!--        <dependency>-->
-<!--            <groupId>com.alibaba.cloud</groupId>-->
-<!--            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>-->
-<!--        </dependency>-->
-        <!--feign客户端依赖-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
             <version>3.1.2</version>
         </dependency>
-        <!--引入HttpClient依赖-->
+        <!--HttpClient-->
         <dependency>
             <groupId>io.github.openfeign</groupId>
             <artifactId>feign-httpclient</artifactId>
@@ -69,7 +56,7 @@
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
-<!--            <version>2021.1</version>-->
+            <!--            <version>2021.1</version>-->
             <exclusions>
                 <exclusion>
                     <artifactId>seata-spring-boot-starter</artifactId>
@@ -87,18 +74,8 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.12.0</version>
         </dependency>
-        <!--        <dependency>-->
-<!--            <groupId>io.seata</groupId>-->
-<!--            <artifactId>seata-serializer-all</artifactId>-->
-<!--            <version>1.4.2</version>-->
-<!--        </dependency>-->
-        <!--引入feign的统一api-->
-        <!--        <dependency>-->
-        <!--            <groupId>WDM</groupId>-->
-        <!--            <artifactId>feign-api</artifactId>-->
-        <!--            <version>1.0</version>-->
-        <!--        </dependency>-->
     </dependencies>
+
     <build>
         <finalName>app</finalName>
         <plugins>
@@ -108,5 +85,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

@@ -1,28 +1,22 @@
 package WDM.service.Impl;
 
-
 import WDM.mapper.ItemMapper;
 import WDM.mapper.OrderMapper;
 import WDM.pojo.Item;
 import WDM.pojo.Order;
 import WDM.service.OrderService;
-import feign.FeignException;
 import feign.clients.PaymentClient;
 import feign.clients.StockClient;
 import feign.pojo.Stock;
 import io.seata.core.context.RootContext;
-import io.seata.core.event.GlobalTransactionEvent;
 import io.seata.core.exception.TransactionException;
 import io.seata.spring.annotation.GlobalLock;
 import io.seata.spring.annotation.GlobalTransactional;
-
 import io.seata.tm.api.GlobalTransactionContext;
-import io.seata.tm.api.TransactionalExecutor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -103,8 +97,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public Boolean addItem(String orderId, String itemId) {
-        //need Feign to call stock service.
-        // get price of itemid
         for (Item item : itemMapper.findItem(orderId)) {
             if (item.getItemId().equals(itemId)) {
                 itemMapper.updateAmount(itemId);

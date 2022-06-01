@@ -1,7 +1,6 @@
 package WDM.service;
 
 import WDM.pojo.Payment;
-import feign.Feign;
 import feign.FeignException;
 import io.seata.core.exception.TransactionException;
 

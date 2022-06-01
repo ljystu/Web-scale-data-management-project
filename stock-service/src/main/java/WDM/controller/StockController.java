@@ -1,6 +1,5 @@
 package WDM.controller;
 
-
 import WDM.pojo.Stock;
 import WDM.service.StockService;
 import io.seata.core.exception.TransactionException;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-//import static com.alibaba.nacos.api.config.ConfigType.JSON;
 
 @RestController
 @EnableEurekaClient
@@ -25,7 +23,6 @@ public class StockController {
     //    Output JSON fields:
     //            “stock” - the item’s stock
     //            “price” - the item’s price
-
     @GetMapping("find/{itemId}")
     public Map<String, Object> queryById(@PathVariable("itemId") String id) {
         Stock stock = stockService.queryById(id);
@@ -48,7 +45,6 @@ public class StockController {
         } else {
             return "400";
         }
-
     }
 
     ///stock/add/{item_id}/{amount}
