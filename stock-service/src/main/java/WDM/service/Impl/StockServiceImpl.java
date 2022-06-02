@@ -21,7 +21,8 @@ public class StockServiceImpl implements StockService {
     StockMapper stockMapper;
 
     @Override
-    @Transactional
+    @GlobalLock
+//    @Transactional
     public Stock queryById(String id) {
         return stockMapper.queryById(id);
     }
@@ -52,7 +53,7 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    @Transactional
+//    @Transactional
     @GlobalLock
     public String create(double price) {
         String id = UUID.randomUUID().toString();

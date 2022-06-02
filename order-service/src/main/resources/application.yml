@@ -3,6 +3,7 @@ server:
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/Order?useSSL=false
+#      jdbc:postgresql://database-1:cxbgmrby1kdy:eu-central-1:rds:amazonaws:com:5432/Order?useSSL=false:
     username: postgres
     password: postgresql
     driver-class-name: org.postgresql.Driver
@@ -34,7 +35,7 @@ seata:
   client:
     rm:
       lock:
-        retry-times: 300
+        retry-times: 30
         retry-interval: 100
   application-id: ${spring.application.name}
 

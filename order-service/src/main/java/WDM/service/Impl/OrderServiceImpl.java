@@ -53,7 +53,6 @@ public class OrderServiceImpl implements OrderService {
         } else {
             return "400";
         }
-
     }
 
     /**
@@ -72,7 +71,7 @@ public class OrderServiceImpl implements OrderService {
      */
     @GlobalLock
     @Override
-    @Transactional
+//    @Transactional
     public Order findOrder(String orderId) {
         Order order = orderMapper.findOrder(orderId);
         List<Item> items = (itemMapper.findItem(orderId));
@@ -127,12 +126,12 @@ public class OrderServiceImpl implements OrderService {
     Lock lock = new ReentrantLock();
 
     @Override
-    @GlobalTransactional(rollbackFor = Exception.class, timeoutMills = 6000000)
+    @GlobalTransactional(rollbackFor = Exception.class)
     public Boolean checkout(Order order) throws TransactionException {
         //how to rollback when error
 //        Order order = orderMapper.findOrder(orderId);
         try {
-            lock.lock();
+//            lock.lock();
 //            String XID = RootContext.getXID();
             log.info("Seata global transaction id{}", RootContext.getXID());
             List<Item> items = itemMapper.findItem(order.getOrderId());
@@ -153,9 +152,8 @@ public class OrderServiceImpl implements OrderService {
             GlobalTransactionContext.reload(RootContext.getXID()).rollback();
             return false;
         } finally {
-            lock.unlock();
+//            lock.unlock();
         }
-
     }
 
     /**

@@ -92,6 +92,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    @GlobalLock
     @Transactional
     public String create() {
         String id = UUID.randomUUID().toString();
@@ -104,7 +105,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @GlobalLock
-    @Transactional
+//    @Transactional
     public Payment queryById(String id) {
         return paymentMapper.queryById(id);
     }
