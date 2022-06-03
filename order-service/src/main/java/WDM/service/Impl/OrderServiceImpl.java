@@ -45,7 +45,7 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
-    @Transactional
+//    @Transactional
     public String createOrder(String userId) {
         String orderId = UUID.randomUUID().toString();
         if (orderMapper.createOrder(userId, orderId)) {
@@ -60,7 +60,7 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
-    @Transactional
+//    @Transactional
     public Boolean removeOrder(String orderId) {
         return orderMapper.removeOrder(orderId);
     }
@@ -69,7 +69,7 @@ public class OrderServiceImpl implements OrderService {
      * @param orderId
      * @return
      */
-    @GlobalLock
+//    @GlobalLock
     @Override
 //    @Transactional
     public Order findOrder(String orderId) {
@@ -94,7 +94,7 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
-    @Transactional
+//    @Transactional
     public Boolean addItem(String orderId, String itemId) {
         for (Item item : itemMapper.findItem(orderId)) {
             if (item.getItemId().equals(itemId)) {
@@ -114,7 +114,7 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
-    @Transactional
+//    @Transactional
     public Boolean removeItem(String orderId, String itemId) {
         return itemMapper.removeItem(orderId, itemId);
     }
@@ -144,7 +144,7 @@ public class OrderServiceImpl implements OrderService {
                 throw new TransactionException("payment failed");
             }
             orderMapper.checkout(order.getOrderId());
-            GlobalTransactionContext.reload(RootContext.getXID()).commit();
+//            GlobalTransactionContext.reload(RootContext.getXID()).commit();
             return true;
         } catch (Exception e) {
             log.error("checkout failed:{}", e.getMessage(), e);
@@ -160,7 +160,7 @@ public class OrderServiceImpl implements OrderService {
      * @param orderId
      * @return
      */
-    @Transactional
+//    @Transactional
     @Override
     public void cancelOrder(String orderId) {
         orderMapper.cancelOrder(orderId);

@@ -29,7 +29,7 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    @Transactional
+//    @Transactional
     public Boolean subtract(String id, int amount) throws TransactionException, FeignException {
 
         log.info("Seata global transaction id=================>{}", RootContext.getXID());
@@ -48,7 +48,7 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    @Transactional
+//    @Transactional
     public Boolean add(String id, int amount) {
         return stockMapper.add(id, amount);
     }

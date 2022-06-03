@@ -36,7 +36,7 @@ public class PaymentServiceImpl implements PaymentService {
     StockClient stockClient;
 
     @Override
-    @Transactional
+//    @Transactional
     public Boolean pay(String id, double funds) throws FeignException, TransactionException {
         log.info("Seata global transaction id=================>{}", RootContext.getXID());
         RootContext.bind(RootContext.getXID());
@@ -57,7 +57,7 @@ public class PaymentServiceImpl implements PaymentService {
     @GlobalTransactional(rollbackFor = Exception.class)
     public Boolean cancel(String userid, String orderId) throws TransactionException {
         try {
-            lock.lock();
+//            lock.lock();
             Order order = orderClient.findOrder(orderId);
             for (Item item : order.getItems()) {
                 if (stockClient.add(item.getItemId(), item.getAmount()).equals("400")) {
@@ -74,7 +74,7 @@ public class PaymentServiceImpl implements PaymentService {
             GlobalTransactionContext.reload(RootContext.getXID()).rollback();
             return false;
         } finally {
-            lock.unlock();
+//            lock.unlock();
         }
         return true;
     }
@@ -86,14 +86,14 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    @Transactional
+//    @Transactional
     public Boolean add(String id, double funds) {
         return paymentMapper.add(id, funds);
     }
 
     @Override
-    @GlobalLock
-    @Transactional
+//    @GlobalLock
+//    @Transactional
     public String create() {
         String id = UUID.randomUUID().toString();
         if (paymentMapper.create(id)) {
