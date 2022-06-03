@@ -36,6 +36,12 @@ public class StockController {
         return map;
     }
 
+    @GetMapping("findStock/{itemId}")
+    public int StockById(@PathVariable("itemId") String id){
+        Stock stock = stockService.queryById(id);
+        return stock.getAmount();
+    }
+
     //    /stock/subtract/{item_id}/{amount}
     //    POST - subtracts an item from stock by the amount specified.
     @PostMapping("subtract/{itemId}/{amount}")

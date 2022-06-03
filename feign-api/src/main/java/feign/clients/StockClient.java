@@ -18,4 +18,7 @@ public interface StockClient {
 
     @PostMapping("stock/add/{itemId}/{amount}")
     String add(@PathVariable("itemId") String id, @PathVariable("amount") int amount);
+
+    @GetMapping("stock/findStock/{itemId}")
+    int findStock(@PathVariable("itemId") String itemId);
 }

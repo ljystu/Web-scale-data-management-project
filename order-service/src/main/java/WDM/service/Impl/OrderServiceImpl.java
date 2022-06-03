@@ -136,9 +136,17 @@ public class OrderServiceImpl implements OrderService {
             log.info("Seata global transaction id{}", RootContext.getXID());
             List<Item> items = itemMapper.findItem(order.getOrderId());
             for (Item item : items) {
+                if (stockClient.findStock(item.getItemId())<item.getAmount()) {
+                    throw new TransactionException("stock not enough");
+                }
+            }
+            for (Item item : items) {
                 if (stockClient.subtract(item.getItemId(), item.getAmount()).equals("400")) {
                     throw new TransactionException("stock failed");
                 }
+            }
+            if (paymentClient.getCredit(order.getUserId()).getCredit()<order.getTotalCost()) {
+                throw new TransactionException("Credit not enough");
             }
             if (paymentClient.pay(order.getUserId(), order.getOrderId(), order.getTotalCost()).equals("400")) {
                 throw new TransactionException("payment failed");
