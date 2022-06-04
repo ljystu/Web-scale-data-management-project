@@ -5,7 +5,6 @@ import WDM.mapper.OrderMapper;
 import WDM.pojo.Item;
 import WDM.pojo.Order;
 import WDM.service.OrderService;
-import WDM.utils.Snowflake;
 import WDM.utils.UniqueOrderGenerate;
 import com.github.yitter.idgen.YitIdHelper;
 import feign.clients.PaymentClient;
@@ -13,18 +12,14 @@ import feign.clients.StockClient;
 import feign.pojo.Stock;
 import io.seata.core.context.RootContext;
 import io.seata.core.exception.TransactionException;
-import io.seata.spring.annotation.GlobalLock;
 import io.seata.spring.annotation.GlobalTransactional;
 import io.seata.tm.api.GlobalTransactionContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
-import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -111,7 +106,6 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         Stock stock = stockClient.findPrice(itemId);
-//        String id = UUID.randomUUID().toString();
         UniqueOrderGenerate idWorker = new UniqueOrderGenerate(0, 0);
         long id = idWorker.nextId();
         itemMapper.addItem(id, orderId, itemId, stock.getPrice());
@@ -138,8 +132,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @GlobalTransactional(rollbackFor = Exception.class)
     public Boolean checkout(Order order) throws TransactionException {
-        //how to rollback when error
-//        Order order = orderMapper.findOrder(orderId);
+
         try {
 //            lock.lock();
 //            String XID = RootContext.getXID();

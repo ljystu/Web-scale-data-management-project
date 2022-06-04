@@ -9,7 +9,7 @@ spring:
     password: postgresql
     driver-class-name: org.postgresql.Driver
   application:
-    name: paymentservice
+    name: payment-service
 mybatis:
   type-aliases-package: WDM.pojo
   configuration:

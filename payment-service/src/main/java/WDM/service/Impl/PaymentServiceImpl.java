@@ -1,8 +1,6 @@
 package WDM.service.Impl;
 
 import WDM.mapper.PaymentMapper;
-import WDM.utils.Snowflake;
-import WDM.utils.UniqueOrderGenerate;
 import com.github.yitter.idgen.YitIdHelper;
 import feign.FeignException;
 import feign.pojo.Item;
@@ -13,15 +11,12 @@ import feign.clients.StockClient;
 import feign.pojo.Order;
 import io.seata.core.context.RootContext;
 import io.seata.core.exception.TransactionException;
-import io.seata.spring.annotation.GlobalLock;
 import io.seata.spring.annotation.GlobalTransactional;
 import io.seata.tm.api.GlobalTransactionContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -40,15 +35,15 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
 //    @Transactional
-    public Boolean pay(long id, double funds) throws FeignException, TransactionException {
+    public Boolean pay(long userId, double credit) throws FeignException, TransactionException {
         log.info("Seata global transaction id=================>{}", RootContext.getXID());
         RootContext.bind(RootContext.getXID());
+
         try {
-            paymentMapper.pay(id, funds);
+            paymentMapper.pay(userId, credit);
         } catch (Exception e) {
             log.info("Payment exception: Seata global transaction id=================>{}", RootContext.getXID());
 //            GlobalTransactionContext.reload(RootContext.getXID()).rollback();
-//            throw e;
             return false;
         }
         return true;
@@ -58,7 +53,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @GlobalTransactional(rollbackFor = Exception.class)
-    public Boolean cancel(long userid, long orderId) throws TransactionException {
+    public Boolean cancel(long userId, long orderId) throws TransactionException {
         try {
 //            lock.lock();
             Order order = orderClient.findOrder(orderId);
@@ -67,7 +62,7 @@ public class PaymentServiceImpl implements PaymentService {
                     throw new TransactionException("adding stock failed");
                 }
             }
-            if (!paymentMapper.add(userid, (int) order.getTotalCost())) {
+            if (!paymentMapper.add(userId, (int) order.getTotalCost())) {
                 throw new TransactionException("adding credit failed");
             }
             orderClient.cancel(orderId);
@@ -83,26 +78,24 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public Boolean status(long userid, long orderid) {
-        Order order = orderClient.findOrder(orderid);
+    public Boolean status(long userId, long orderId) {
+        Order order = orderClient.findOrder(orderId);
         return order.isPaid();
     }
 
     @Override
 //    @Transactional
-    public Boolean add(long id, double funds) {
-        return paymentMapper.add(id, funds);
+    public Boolean add(long userId, double credit) {
+        return paymentMapper.add(userId, credit);
     }
 
     @Override
 //    @GlobalLock
 //    @Transactional
     public String create() {
-//        String id = UUID.randomUUID().toString();
-// 初始化以后，即可在任何需要生成ID的地方，调用以下方法：
-        long id = YitIdHelper.nextId();
-        if (paymentMapper.create(id)) {
-            return String.valueOf(id);
+        long userId = YitIdHelper.nextId();
+        if (paymentMapper.create(userId)) {
+            return String.valueOf(userId);
         } else {
             return "400: fail to create user";
         }
@@ -111,7 +104,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
 //    @GlobalLock
 //    @Transactional
-    public Payment queryById(long id) {
-        return paymentMapper.queryById(id);
+    public Payment queryById(long userId) {
+        return paymentMapper.queryById(userId);
     }
 }

@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-@FeignClient(value = "orderservice", configuration = MultipartSupportConfig.class)
+@FeignClient(value = "order-service", configuration = MultipartSupportConfig.class)
 public interface OrderClient {
-    @GetMapping("orders/find/{order_id}")
-    Order findOrder(@PathVariable("order_id") long orderId);
+    @GetMapping("orders/find/{orderId}")
+    Order findOrder(@PathVariable("orderId") long orderId);
 
     @PostMapping("orders/cancel/{orderId}")
     void cancel(@PathVariable("orderId") long orderId);

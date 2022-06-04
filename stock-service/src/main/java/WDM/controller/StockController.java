@@ -24,8 +24,8 @@ public class StockController {
     //            “stock” - the item’s stock
     //            “price” - the item’s price
     @GetMapping("find/{itemId}")
-    public Map<String, Object> queryById(@PathVariable("itemId") long id) {
-        Stock stock = stockService.queryById(id);
+    public Map<String, Object> queryById(@PathVariable("itemId") long itemId) {
+        Stock stock = stockService.queryById(itemId);
         Map<String, Object> map = new HashMap<>(2);
         if (stock == null) {
             map.put("400", "item not found!");
@@ -37,16 +37,16 @@ public class StockController {
     }
 
     @PostMapping("findStock/{itemId}")
-    public int StockById(@PathVariable("itemId") long id){
-        Stock stock = stockService.queryById(id);
+    public int StockById(@PathVariable("itemId") long itemId){
+        Stock stock = stockService.queryById(itemId);
         return stock.getAmount();
     }
 
     //    /stock/subtract/{item_id}/{amount}
     //    POST - subtracts an item from stock by the amount specified.
     @PostMapping("subtract/{itemId}/{amount}")
-    public String subtract(@PathVariable("itemId") long id, @PathVariable("amount") int amount) throws TransactionException {
-        if (stockService.subtract(id, amount)) {
+    public String subtract(@PathVariable("itemId") long itemId, @PathVariable("amount") int amount) throws TransactionException {
+        if (stockService.subtract(itemId, amount)) {
             return "200";
         } else {
             return "400";

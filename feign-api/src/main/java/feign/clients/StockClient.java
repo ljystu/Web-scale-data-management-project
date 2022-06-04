@@ -1,6 +1,5 @@
 package feign.clients;
 
-
 import feign.config.MultipartSupportConfig;
 import feign.pojo.Stock;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -9,7 +8,7 @@ import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-@FeignClient(value = "stockservice",configuration = MultipartSupportConfig.class)
+@FeignClient(value = "stock-service", configuration = MultipartSupportConfig.class)
 public interface StockClient {
     @GetMapping("stock/find/{itemId}")
     Stock findPrice(@PathVariable("itemId") long itemId);

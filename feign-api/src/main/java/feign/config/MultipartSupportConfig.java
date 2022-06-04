@@ -12,26 +12,25 @@ import java.util.Enumeration;
 public class MultipartSupportConfig implements RequestInterceptor {
 
     /**
-     * 解决服务直接调用请求头不传递的问题
+     * Manually pass xid to the branch transaction
+     *
      * @param template
      */
     @Override
     public void apply(RequestTemplate template) {
-        //解决不传递请求头中的token
+        // token in the requests headers
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if (attributes != null){
+        if (attributes != null) {
             HttpServletRequest request = attributes.getRequest();
             Enumeration<String> headerNames = request.getHeaderNames();
-            //可以在这里将自定义请求头传递进去， key 请求， value 值
-            //处理上游请求头信息，传递时继续携带
+
             while (headerNames.hasMoreElements()) {
                 String name = headerNames.nextElement();
                 String values = request.getHeader(name);
                 template.header(name, values);
             }
         }
-
-        // 解决seata的xid未传递
+        // xid in headers
         String xid = RootContext.getXID();
         template.header(RootContext.KEY_XID, xid);
     }

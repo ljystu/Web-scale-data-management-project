@@ -3,19 +3,14 @@ package WDM.service.Impl;
 import WDM.mapper.StockMapper;
 import WDM.pojo.Stock;
 import WDM.service.StockService;
-import WDM.utils.Snowflake;
-import WDM.utils.UniqueOrderGenerate;
 import com.github.yitter.idgen.YitIdHelper;
 import feign.FeignException;
 import io.seata.core.context.RootContext;
 import io.seata.core.exception.TransactionException;
-import io.seata.spring.annotation.GlobalLock;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -27,43 +22,39 @@ public class StockServiceImpl implements StockService {
     @Override
 //    @GlobalLock
 //    @Transactional
-    public Stock queryById(long id) {
-        return stockMapper.queryById(id);
+    public Stock queryById(long itemId) {
+        return stockMapper.queryById(itemId);
     }
 
     @Override
 //    @Transactional
-    public Boolean subtract(long id, int amount) throws TransactionException, FeignException {
+    public Boolean subtract(long itemId, int amount) throws TransactionException, FeignException {
 
         log.info("Seata global transaction id=================>{}", RootContext.getXID());
         RootContext.bind(RootContext.getXID());
         try {
-            stockMapper.subtract(id, amount);
+            stockMapper.subtract(itemId, amount);
         } catch (Exception e) {
             log.info("Stock exception: Seata global transaction id=================>{}", RootContext.getXID());
+            //seems we don't need to rollback in the branch transaction
 //            GlobalTransactionContext.reload(RootContext.getXID()).rollback();
-//            throw e;
             return false;
-        } finally {
-
         }
         return true;
     }
 
     @Override
 //    @Transactional
-    public Boolean add(long id, int amount) {
-        return stockMapper.add(id, amount);
+    public Boolean add(long itemId, int amount) {
+        return stockMapper.add(itemId, amount);
     }
 
     @Override
     @Transactional
 //    @GlobalLock
     public String create(double price) {
-//        String id = UUID.randomUUID().toString();
-
-        long id = YitIdHelper.nextId();
-        stockMapper.create(id, price);
-        return String.valueOf(id);
+        long itemId = YitIdHelper.nextId();// Generate random itemId using snowflake algorithm
+        stockMapper.create(itemId, price);
+        return String.valueOf(itemId);
     }
 }

@@ -18,9 +18,9 @@ public class PaymentController {
 
     //    /payment/pay/{user_id}/{order_id}/{amount}
     //    POST - subtracts the amount of the order from the user’s credit (returns failure if credit is not enough)
-    @PostMapping("pay/{user_id}/{order_id}/{amount}")
-    public String pay(@PathVariable("user_id") long userid, @PathVariable("order_id") long orderId, @PathVariable("amount") double amount) throws TransactionException {
-        if (paymentService.pay(userid, amount)) {
+    @PostMapping("pay/{userId}/{orderId}/{amount}")
+    public String pay(@PathVariable("userId") long userId, @PathVariable("orderId") long orderId, @PathVariable("amount") double amount) throws TransactionException {
+        if (paymentService.pay(userId, amount)) {
             return "200";
         } else {
             return "400";
@@ -29,8 +29,8 @@ public class PaymentController {
 
     //payment/cancel/{user_id}/{order_id}
     //    POST - cancels payment made by a specific user for a specific order.
-    @PostMapping("cancel/{user_id}/{order_id}")
-    public String cancel(@PathVariable("user_id") long userid, @PathVariable("order_id") long orderid) {
+    @PostMapping("cancel/{userId}/{orderId}")
+    public String cancel(@PathVariable("userId") long userid, @PathVariable("orderId") long orderid) {
         try {
             paymentService.cancel(userid, orderid);
             return "200";
@@ -43,10 +43,10 @@ public class PaymentController {
     //    GET - returns the status of the payment (paid or not)
     //    Output JSON fields:
     //            “paid” (true/false)
-    @GetMapping("status/{user_id}/{order_id}")
-    public Map<String, String> status(@PathVariable("user_id") long userid, @PathVariable("order_id") long orderid) {
+    @GetMapping("status/{userId}/{orderId}")
+    public Map<String, String> status(@PathVariable("userId") long userId, @PathVariable("orderId") long orderId) {
         Map<String, String> map = new HashMap<>();
-        if (paymentService.status(userid, orderid)) {
+        if (paymentService.status(userId, orderId)) {
             map.put("paid", "true");
         } else {
             map.put("paid", "false");
@@ -58,10 +58,10 @@ public class PaymentController {
     //    POST - adds funds (amount) to the user’s (user_id) account
     //    Output JSON fields:
     //            “done” (true/false)
-    @PostMapping("add_funds/{user_id}/{amount}")
-    public Map<String, String> add(@PathVariable("user_id") long id, @PathVariable("amount") double amount) {
+    @PostMapping("add_funds/{userId}/{amount}")
+    public Map<String, String> add(@PathVariable("userId") long userId, @PathVariable("amount") double amount) {
         Map<String, String> map = new HashMap<>();
-        if (paymentService.add(id, amount)) {
+        if (paymentService.add(userId, amount)) {
             map.put("done", "true");
         } else {
             map.put("done", "false");
@@ -86,9 +86,9 @@ public class PaymentController {
     //    Output JSON fields:
     //            “user_id” - the user’s id
     //            “credit” - the user’s credit
-    @GetMapping("find_user/{user_id}")
-    public Map<String, Object> queryById(@PathVariable("user_id") long user_id) {
-        Payment user = paymentService.queryById(user_id);
+    @GetMapping("find_user/{userId}")
+    public Map<String, Object> queryById(@PathVariable("userId") long userId) {
+        Payment user = paymentService.queryById(userId);
         Map<String, Object> map = new HashMap<>(2);
         if (user == null) {
             map.put("400", "item not found!");
