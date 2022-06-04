@@ -1,6 +1,9 @@
 package WDM.service.Impl;
 
 import WDM.mapper.PaymentMapper;
+import WDM.utils.Snowflake;
+import WDM.utils.UniqueOrderGenerate;
+import com.github.yitter.idgen.YitIdHelper;
 import feign.FeignException;
 import feign.pojo.Item;
 import WDM.pojo.Payment;
@@ -37,7 +40,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
 //    @Transactional
-    public Boolean pay(String id, double funds) throws FeignException, TransactionException {
+    public Boolean pay(long id, double funds) throws FeignException, TransactionException {
         log.info("Seata global transaction id=================>{}", RootContext.getXID());
         RootContext.bind(RootContext.getXID());
         try {
@@ -55,7 +58,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @GlobalTransactional(rollbackFor = Exception.class)
-    public Boolean cancel(String userid, String orderId) throws TransactionException {
+    public Boolean cancel(long userid, long orderId) throws TransactionException {
         try {
 //            lock.lock();
             Order order = orderClient.findOrder(orderId);
@@ -80,14 +83,14 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public Boolean status(String userid, String orderid) {
+    public Boolean status(long userid, long orderid) {
         Order order = orderClient.findOrder(orderid);
         return order.isPaid();
     }
 
     @Override
 //    @Transactional
-    public Boolean add(String id, double funds) {
+    public Boolean add(long id, double funds) {
         return paymentMapper.add(id, funds);
     }
 
@@ -95,18 +98,20 @@ public class PaymentServiceImpl implements PaymentService {
 //    @GlobalLock
 //    @Transactional
     public String create() {
-        String id = UUID.randomUUID().toString();
+//        String id = UUID.randomUUID().toString();
+// 初始化以后，即可在任何需要生成ID的地方，调用以下方法：
+        long id = YitIdHelper.nextId();
         if (paymentMapper.create(id)) {
-            return id;
+            return String.valueOf(id);
         } else {
             return "400: fail to create user";
         }
     }
 
     @Override
-    @GlobalLock
+//    @GlobalLock
 //    @Transactional
-    public Payment queryById(String id) {
+    public Payment queryById(long id) {
         return paymentMapper.queryById(id);
     }
 }

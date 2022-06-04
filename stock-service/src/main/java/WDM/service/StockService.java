@@ -5,11 +5,11 @@ import feign.FeignException;
 import io.seata.core.exception.TransactionException;
 
 public interface StockService {
-    Stock queryById(String id);
+    Stock queryById(long id);
 
-    Boolean subtract(String id, int amount) throws TransactionException, FeignException;
+    Boolean subtract(long id, int amount) throws TransactionException, FeignException;
 
-    Boolean add(String id, int amount);
+    Boolean add(long id, int amount);
 
     String create(double price);
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
@@ -23,10 +24,10 @@ public class OrderController {
     //    Output JSON fields:
     //            “order_id”  - the order’s id
     @PostMapping("create/{userId}")
-    public Map<String, String> createOrder(@PathVariable("userId") String userId) {
+    public Map<String, String> createOrder(@PathVariable("userId") long userId) {
         Map<String, String> map = new HashMap<>();
-        String orderId = orderService.createOrder(userId);
-        map.put("order_id", orderId);
+        long orderId = orderService.createOrder(userId);
+        map.put("order_id", String.valueOf(orderId));
         return map;
 
     }
@@ -34,7 +35,7 @@ public class OrderController {
     ///orders/remove/{order_id}
     //    DELETE - deletes an order by ID
     @DeleteMapping("remove/{orderId}")
-    public ResponseEntity removeOrder(@PathVariable("orderId") String orderId) {
+    public ResponseEntity removeOrder(@PathVariable("orderId") long orderId) {
         if (orderService.removeOrder(orderId)) {
             return new ResponseEntity(HttpStatus.OK);
 //            return "200";
@@ -53,14 +54,14 @@ public class OrderController {
     //“user_id”  - the user’s id that made the order
     //“total_cost” - the total cost of the items in the order
     @GetMapping("find/{orderId}")
-    public Order findOrder(@PathVariable("orderId") String orderId) {
+    public Order findOrder(@PathVariable("orderId") long orderId) {
         return orderService.findOrder(orderId);
     }
 
     ///orders/addItem/{order_id}/{item_id}
     //    POST - adds a given item in the order given
     @PostMapping("addItem/{orderId}/{itemId}")
-    public ResponseEntity addItem(@PathVariable("orderId") String orderId, @PathVariable("itemId") String itemId) {
+    public ResponseEntity addItem(@PathVariable("orderId") long orderId, @PathVariable("itemId") long itemId) {
         if (orderService.addItem(orderId, itemId)) {
             return new ResponseEntity(HttpStatus.OK);
         } else {
@@ -71,7 +72,7 @@ public class OrderController {
     ///orders/removeItem/{order_id}/{item_id}
     //    DELETE - removes the given item from the given order
     @DeleteMapping("removeItem/{orderId}/{itemId}")
-    public ResponseEntity removeItem(@PathVariable("orderId") String orderId, @PathVariable("itemId") String itemId) {
+    public ResponseEntity removeItem(@PathVariable("orderId") long orderId, @PathVariable("itemId") long itemId) {
         if (orderService.removeItem(orderId, itemId)) {
             return new ResponseEntity(HttpStatus.OK);
         } else {
@@ -84,9 +85,9 @@ public class OrderController {
     ///orders/checkout/{order_id}
     //    POST - makes the payment (via calling the payment service), subtracts the stock (via the stock service) and returns a status (success/failure).
     @PostMapping("checkout/{orderId}")
-    public ResponseEntity checkout(@PathVariable("orderId") String orderId) {
+    public ResponseEntity checkout(@PathVariable("orderId") long orderId) {
         try {
-            lock.lock();
+//            lock.lock();
             Order order = orderService.findOrder(orderId);
             if (orderService.checkout(order)) {
                 return new ResponseEntity(HttpStatus.OK);
@@ -96,12 +97,12 @@ public class OrderController {
         } catch (Exception e) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         } finally {
-            lock.unlock();
+//            lock.unlock();
         }
     }
 
     @PostMapping("cancel/{orderId}")
-    public void cancel(@PathVariable("orderId") String orderId) {
+    public void cancel(@PathVariable("orderId") long orderId) {
         orderService.cancelOrder(orderId);
 
     }

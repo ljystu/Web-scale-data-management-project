@@ -6,15 +6,15 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 public interface StockMapper {
-    @Select("select * from stock where itemid = #{id} for update")
-    Stock queryById(String id);
+    @Select("select * from stock where itemid = #{id} ")
+    Stock queryById(long id);
 
     @Update("update stock set amount = amount - #{num} where itemid = #{id}")
-    Boolean subtract(String id, int num);
+    Boolean subtract( long id, int num);
 
     @Update("update stock set amount = amount + #{num} where itemid = #{id}")
-    Boolean add(String id, int num);
+    Boolean add(long id, int num);
 
     @Insert("insert into stock(itemid, price) values(#{id}, #{price})")
-    Boolean create(String id, double price);
+    Boolean create(long id, double price);
 }

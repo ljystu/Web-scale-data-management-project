@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 @FeignClient(value = "paymentservice", configuration = MultipartSupportConfig.class)
 public interface PaymentClient {
     @PostMapping("payment/pay/{userId}/{orderId}/{amount}")
-    String pay(@PathVariable("userId") String userid, @PathVariable("orderId") String orderId, @PathVariable("amount") double amount);
+    String pay(@PathVariable("userId") long userid, @PathVariable("orderId") long orderId, @PathVariable("amount") double amount);
 
     @GetMapping("payment/find_user/{user_id}")
-    Payment getCredit(@PathVariable("userId") String userid);
+    Payment getCredit(@PathVariable("user_id") long userid);
 
 }

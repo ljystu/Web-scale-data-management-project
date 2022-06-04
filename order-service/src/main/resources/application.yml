@@ -39,7 +39,7 @@ seata:
         retry-interval: 100
   application-id: ${spring.application.name}
 
-feign:
-  httpclient:
-    connection-timeout: 60000
-    connection-timer-repeat: 3000
+#feign:
+#  httpclient:
+#    connection-timeout: 60000
+#    connection-timer-repeat: 3000

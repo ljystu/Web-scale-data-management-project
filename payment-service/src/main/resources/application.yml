@@ -35,8 +35,8 @@ seata:
         retry-times: 30
         retry-interval: 100
 
-
-feign:
-  httpclient:
-    connection-timeout: 60000
-    connection-timer-repeat: 3000
+#
+#feign:
+#  httpclient:
+#    connection-timeout: 60000
+#    connection-timer-repeat: 3000

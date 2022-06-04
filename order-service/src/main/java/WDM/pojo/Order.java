@@ -6,10 +6,10 @@ import java.util.List;
 
 @Data
 public class Order {
-    private String orderId;
+    private long orderId;
     private double totalCost;
     private boolean paid;
-    private String userId;
-    private List<String> items;
+    private long userId;
+    private List<Long> items;
 }
 

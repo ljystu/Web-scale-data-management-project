@@ -3,6 +3,9 @@ package WDM.service.Impl;
 import WDM.mapper.StockMapper;
 import WDM.pojo.Stock;
 import WDM.service.StockService;
+import WDM.utils.Snowflake;
+import WDM.utils.UniqueOrderGenerate;
+import com.github.yitter.idgen.YitIdHelper;
 import feign.FeignException;
 import io.seata.core.context.RootContext;
 import io.seata.core.exception.TransactionException;
@@ -22,15 +25,15 @@ public class StockServiceImpl implements StockService {
     StockMapper stockMapper;
 
     @Override
-    @GlobalLock
+//    @GlobalLock
 //    @Transactional
-    public Stock queryById(String id) {
+    public Stock queryById(long id) {
         return stockMapper.queryById(id);
     }
 
     @Override
 //    @Transactional
-    public Boolean subtract(String id, int amount) throws TransactionException, FeignException {
+    public Boolean subtract(long id, int amount) throws TransactionException, FeignException {
 
         log.info("Seata global transaction id=================>{}", RootContext.getXID());
         RootContext.bind(RootContext.getXID());
@@ -49,16 +52,18 @@ public class StockServiceImpl implements StockService {
 
     @Override
 //    @Transactional
-    public Boolean add(String id, int amount) {
+    public Boolean add(long id, int amount) {
         return stockMapper.add(id, amount);
     }
 
     @Override
-//    @Transactional
-    @GlobalLock
+    @Transactional
+//    @GlobalLock
     public String create(double price) {
-        String id = UUID.randomUUID().toString();
+//        String id = UUID.randomUUID().toString();
+
+        long id = YitIdHelper.nextId();
         stockMapper.create(id, price);
-        return id;
+        return String.valueOf(id);
     }
 }

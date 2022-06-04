@@ -5,6 +5,9 @@ import WDM.mapper.OrderMapper;
 import WDM.pojo.Item;
 import WDM.pojo.Order;
 import WDM.service.OrderService;
+import WDM.utils.Snowflake;
+import WDM.utils.UniqueOrderGenerate;
+import com.github.yitter.idgen.YitIdHelper;
 import feign.clients.PaymentClient;
 import feign.clients.StockClient;
 import feign.pojo.Stock;
@@ -20,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -46,12 +50,16 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
 //    @Transactional
-    public String createOrder(String userId) {
-        String orderId = UUID.randomUUID().toString();
+//    @GlobalLock
+    public long createOrder(long userId) {
+//        String orderId = UUID.randomUUID().toString();
+
+        // 初始化以后，即可在任何需要生成ID的地方，调用以下方法：
+        long orderId = YitIdHelper.nextId();
         if (orderMapper.createOrder(userId, orderId)) {
             return orderId;
         } else {
-            return "400";
+            return -1;
         }
     }
 
@@ -61,7 +69,7 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
 //    @Transactional
-    public Boolean removeOrder(String orderId) {
+    public Boolean removeOrder(long orderId) {
         return orderMapper.removeOrder(orderId);
     }
 
@@ -72,10 +80,10 @@ public class OrderServiceImpl implements OrderService {
 //    @GlobalLock
     @Override
 //    @Transactional
-    public Order findOrder(String orderId) {
+    public Order findOrder(long orderId) {
         Order order = orderMapper.findOrder(orderId);
         List<Item> items = (itemMapper.findItem(orderId));
-        List<String> itemIds = new LinkedList<>();
+        List<Long> itemIds = new LinkedList<>();
         for (Item item : items) {
             itemIds.add(item.getItemId());
         }
@@ -95,15 +103,17 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
 //    @Transactional
-    public Boolean addItem(String orderId, String itemId) {
+    public Boolean addItem(long orderId, long itemId) {
         for (Item item : itemMapper.findItem(orderId)) {
-            if (item.getItemId().equals(itemId)) {
+            if (item.getItemId() == itemId) {
                 itemMapper.updateAmount(itemId);
                 return true;
             }
         }
         Stock stock = stockClient.findPrice(itemId);
-        String id = UUID.randomUUID().toString();
+//        String id = UUID.randomUUID().toString();
+        UniqueOrderGenerate idWorker = new UniqueOrderGenerate(0, 0);
+        long id = idWorker.nextId();
         itemMapper.addItem(id, orderId, itemId, stock.getPrice());
         return true;
     }
@@ -115,7 +125,7 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
 //    @Transactional
-    public Boolean removeItem(String orderId, String itemId) {
+    public Boolean removeItem(long orderId, long itemId) {
         return itemMapper.removeItem(orderId, itemId);
     }
 
@@ -133,31 +143,45 @@ public class OrderServiceImpl implements OrderService {
         try {
 //            lock.lock();
 //            String XID = RootContext.getXID();
-            log.info("Seata global transaction id{}", RootContext.getXID());
+//            log.info("Seata global transaction id{}", RootContext.getXID());
+            long itime = System.currentTimeMillis();
             List<Item> items = itemMapper.findItem(order.getOrderId());
-            for (Item item : items) {
-                if (stockClient.findStock(item.getItemId())<item.getAmount()) {
-                    throw new TransactionException("stock not enough");
-                }
-            }
+            long mitime = System.currentTimeMillis();
+            log.info("findItem time=================>{}", mitime - itime);
+//            for (Item item : items) {
+//                if (stockClient.findStock(item.getItemId())<item.getAmount()) {
+//                    throw new TransactionException("stock not enough");
+//                }
+//            }
+//            if (paymentClient.getCredit(order.getUserId()).getCredit()<order.getTotalCost()) {
+//                throw new TransactionException("Credit not enough");
+//            }
+            long stime = System.currentTimeMillis();
             for (Item item : items) {
                 if (stockClient.subtract(item.getItemId(), item.getAmount()).equals("400")) {
                     throw new TransactionException("stock failed");
                 }
             }
-            if (paymentClient.getCredit(order.getUserId()).getCredit()<order.getTotalCost()) {
-                throw new TransactionException("Credit not enough");
-            }
+            long etime = System.currentTimeMillis();
+            log.info("Stock time=================>{}", etime - stime);
             if (paymentClient.pay(order.getUserId(), order.getOrderId(), order.getTotalCost()).equals("400")) {
                 throw new TransactionException("payment failed");
             }
+            long ptime = System.currentTimeMillis();
+            log.info("Payment time=================>{}", ptime - etime);
             orderMapper.checkout(order.getOrderId());
+            long qtime = System.currentTimeMillis();
+            log.info("check time=================>{}", qtime - ptime);
 //            GlobalTransactionContext.reload(RootContext.getXID()).commit();
             return true;
         } catch (Exception e) {
             log.error("checkout failed:{}", e.getMessage(), e);
             log.info("Seata global transaction id=================>{}", RootContext.getXID());
+            long atime = System.currentTimeMillis();
+
             GlobalTransactionContext.reload(RootContext.getXID()).rollback();
+            long btime = System.currentTimeMillis();
+            log.info("rollback time=================>{}", btime - atime);
             return false;
         } finally {
 //            lock.unlock();
@@ -170,7 +194,7 @@ public class OrderServiceImpl implements OrderService {
      */
 //    @Transactional
     @Override
-    public void cancelOrder(String orderId) {
+    public void cancelOrder(long orderId) {
         orderMapper.cancelOrder(orderId);
     }
 }

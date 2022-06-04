@@ -6,16 +6,16 @@ import io.seata.core.exception.TransactionException;
 
 
 public interface PaymentService {
-    Boolean pay(String id, double funds) throws FeignException, TransactionException;
+    Boolean pay(long id, double funds) throws FeignException, TransactionException;
 
-    Boolean cancel(String userid, String orderid) throws TransactionException;
+    Boolean cancel(long userid, long orderid) throws TransactionException;
 
-    Boolean status(String userid, String orderid);
+    Boolean status(long userid, long orderid);
 
-    Boolean add(String id, double funds);
+    Boolean add(long id, double funds);
 
     String create();
 
-    Payment queryById(String id);
+    Payment queryById(long id);
 
 }

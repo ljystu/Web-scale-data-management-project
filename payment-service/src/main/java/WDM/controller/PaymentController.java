@@ -19,7 +19,7 @@ public class PaymentController {
     //    /payment/pay/{user_id}/{order_id}/{amount}
     //    POST - subtracts the amount of the order from the user’s credit (returns failure if credit is not enough)
     @PostMapping("pay/{user_id}/{order_id}/{amount}")
-    public String pay(@PathVariable("user_id") String userid, @PathVariable("order_id") String orderId, @PathVariable("amount") double amount) throws TransactionException {
+    public String pay(@PathVariable("user_id") long userid, @PathVariable("order_id") long orderId, @PathVariable("amount") double amount) throws TransactionException {
         if (paymentService.pay(userid, amount)) {
             return "200";
         } else {
@@ -30,7 +30,7 @@ public class PaymentController {
     //payment/cancel/{user_id}/{order_id}
     //    POST - cancels payment made by a specific user for a specific order.
     @PostMapping("cancel/{user_id}/{order_id}")
-    public String cancel(@PathVariable("user_id") String userid, @PathVariable("order_id") String orderid) {
+    public String cancel(@PathVariable("user_id") long userid, @PathVariable("order_id") long orderid) {
         try {
             paymentService.cancel(userid, orderid);
             return "200";
@@ -44,7 +44,7 @@ public class PaymentController {
     //    Output JSON fields:
     //            “paid” (true/false)
     @GetMapping("status/{user_id}/{order_id}")
-    public Map<String, String> status(@PathVariable("user_id") String userid, @PathVariable("order_id") String orderid) {
+    public Map<String, String> status(@PathVariable("user_id") long userid, @PathVariable("order_id") long orderid) {
         Map<String, String> map = new HashMap<>();
         if (paymentService.status(userid, orderid)) {
             map.put("paid", "true");
@@ -59,7 +59,7 @@ public class PaymentController {
     //    Output JSON fields:
     //            “done” (true/false)
     @PostMapping("add_funds/{user_id}/{amount}")
-    public Map<String, String> add(@PathVariable("user_id") String id, @PathVariable("amount") double amount) {
+    public Map<String, String> add(@PathVariable("user_id") long id, @PathVariable("amount") double amount) {
         Map<String, String> map = new HashMap<>();
         if (paymentService.add(id, amount)) {
             map.put("done", "true");
@@ -87,7 +87,7 @@ public class PaymentController {
     //            “user_id” - the user’s id
     //            “credit” - the user’s credit
     @GetMapping("find_user/{user_id}")
-    public Map<String, Object> queryById(@PathVariable("user_id") String user_id) {
+    public Map<String, Object> queryById(@PathVariable("user_id") long user_id) {
         Payment user = paymentService.queryById(user_id);
         Map<String, Object> map = new HashMap<>(2);
         if (user == null) {

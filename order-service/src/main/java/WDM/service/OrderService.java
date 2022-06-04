@@ -7,17 +7,17 @@ import io.seata.core.exception.TransactionException;
 
 public interface OrderService {
 
-    String createOrder( String userId);
+    long createOrder( long userId);
 
-    Boolean removeOrder(String orderId);
+    Boolean removeOrder(long orderId);
 
-    Order findOrder( String orderId);
+    Order findOrder( long orderId);
 
-    Boolean addItem(String orderId,  String itemId);
+    Boolean addItem(long orderId,  long itemId);
 
-    Boolean removeItem(String orderId, String itemId);
+    Boolean removeItem(long orderId, long itemId);
 
     Boolean checkout(Order order) throws TransactionException;
 
-    void cancelOrder(String orderId);
+    void cancelOrder(long orderId);
 }
