@@ -5,6 +5,7 @@ import WDM.mapper.OrderMapper;
 import WDM.pojo.Item;
 import WDM.pojo.Order;
 import WDM.service.OrderService;
+import WDM.utils.ResponseCode;
 import WDM.utils.UniqueOrderGenerate;
 import com.github.yitter.idgen.YitIdHelper;
 import feign.clients.PaymentClient;
@@ -16,7 +17,10 @@ import io.seata.spring.annotation.GlobalTransactional;
 import io.seata.tm.api.GlobalTransactionContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -47,9 +51,6 @@ public class OrderServiceImpl implements OrderService {
 //    @Transactional
 //    @GlobalLock
     public long createOrder(long userId) {
-//        String orderId = UUID.randomUUID().toString();
-
-        // 初始化以后，即可在任何需要生成ID的地方，调用以下方法：
         long orderId = YitIdHelper.nextId();
         if (orderMapper.createOrder(userId, orderId)) {
             return orderId;
@@ -63,7 +64,7 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
-//    @Transactional
+    @Transactional
     public Boolean removeOrder(long orderId) {
         return orderMapper.removeOrder(orderId);
     }
@@ -97,7 +98,7 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
-//    @Transactional
+    @Transactional
     public Boolean addItem(long orderId, long itemId) {
         for (Item item : itemMapper.findItem(orderId)) {
             if (item.getItemId() == itemId) {
@@ -118,7 +119,7 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
-//    @Transactional
+    @Transactional
     public Boolean removeItem(long orderId, long itemId) {
         return itemMapper.removeItem(orderId, itemId);
     }
@@ -136,7 +137,7 @@ public class OrderServiceImpl implements OrderService {
         try {
 //            lock.lock();
 //            String XID = RootContext.getXID();
-//            log.info("Seata global transaction id{}", RootContext.getXID());
+            log.info("Seata global transaction id{}", RootContext.getXID());
             long itime = System.currentTimeMillis();
             List<Item> items = itemMapper.findItem(order.getOrderId());
             long mitime = System.currentTimeMillis();
@@ -151,13 +152,13 @@ public class OrderServiceImpl implements OrderService {
 //            }
             long stime = System.currentTimeMillis();
             for (Item item : items) {
-                if (stockClient.subtract(item.getItemId(), item.getAmount()).equals("400")) {
+                if (stockClient.subtract(item.getItemId(), item.getAmount()).equals(new ResponseCode().error())) {
                     throw new TransactionException("stock failed");
                 }
             }
             long etime = System.currentTimeMillis();
             log.info("Stock time=================>{}", etime - stime);
-            if (paymentClient.pay(order.getUserId(), order.getOrderId(), order.getTotalCost()).equals("400")) {
+            if (paymentClient.pay(order.getUserId(), order.getOrderId(), order.getTotalCost()).equals(new ResponseCode().error())) {
                 throw new TransactionException("payment failed");
             }
             long ptime = System.currentTimeMillis();
@@ -170,8 +171,8 @@ public class OrderServiceImpl implements OrderService {
         } catch (Exception e) {
             log.error("checkout failed:{}", e.getMessage(), e);
             log.info("Seata global transaction id=================>{}", RootContext.getXID());
-            long atime = System.currentTimeMillis();
 
+            long atime = System.currentTimeMillis();
             GlobalTransactionContext.reload(RootContext.getXID()).rollback();
             long btime = System.currentTimeMillis();
             log.info("rollback time=================>{}", btime - atime);

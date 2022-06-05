@@ -2,10 +2,12 @@ package WDM.controller;
 
 import WDM.pojo.Order;
 import WDM.service.OrderService;
+import WDM.utils.ResponseCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
@@ -36,11 +38,9 @@ public class OrderController {
     @DeleteMapping("remove/{orderId}")
     public ResponseEntity removeOrder(@PathVariable("orderId") long orderId) {
         if (orderService.removeOrder(orderId)) {
-            return new ResponseEntity(HttpStatus.OK);
-//            return "200";
+            return new ResponseCode().ok();
         } else {
-//            return "400";
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseCode().error();
         }
     }
 
@@ -62,9 +62,9 @@ public class OrderController {
     @PostMapping("addItem/{orderId}/{itemId}")
     public ResponseEntity addItem(@PathVariable("orderId") long orderId, @PathVariable("itemId") long itemId) {
         if (orderService.addItem(orderId, itemId)) {
-            return new ResponseEntity(HttpStatus.OK);
+            return new ResponseCode().ok();
         } else {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseCode().error();
         }
     }
 
@@ -73,9 +73,10 @@ public class OrderController {
     @DeleteMapping("removeItem/{orderId}/{itemId}")
     public ResponseEntity removeItem(@PathVariable("orderId") long orderId, @PathVariable("itemId") long itemId) {
         if (orderService.removeItem(orderId, itemId)) {
-            return new ResponseEntity(HttpStatus.OK);
+            return new ResponseCode().ok();//return "200";
+
         } else {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseCode().error();//return "400";
         }
     }
 
@@ -89,12 +90,12 @@ public class OrderController {
 //            lock.lock();
             Order order = orderService.findOrder(orderId);
             if (orderService.checkout(order)) {
-                return new ResponseEntity(HttpStatus.OK);
+                return new ResponseCode().ok();
             } else {
-                return new ResponseEntity(HttpStatus.BAD_REQUEST);
+                return new ResponseCode().error();
             }
         } catch (Exception e) {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseCode().error();
         } finally {
 //            lock.unlock();
         }
@@ -103,6 +104,5 @@ public class OrderController {
     @PostMapping("cancel/{orderId}")
     public void cancel(@PathVariable("orderId") long orderId) {
         orderService.cancelOrder(orderId);
-
     }
 }

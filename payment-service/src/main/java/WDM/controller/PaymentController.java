@@ -2,8 +2,11 @@ package WDM.controller;
 
 import WDM.pojo.Payment;
 import WDM.service.PaymentService;
+import WDM.utils.ResponseCode;
 import io.seata.core.exception.TransactionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -19,23 +22,23 @@ public class PaymentController {
     //    /payment/pay/{user_id}/{order_id}/{amount}
     //    POST - subtracts the amount of the order from the user’s credit (returns failure if credit is not enough)
     @PostMapping("pay/{userId}/{orderId}/{amount}")
-    public String pay(@PathVariable("userId") long userId, @PathVariable("orderId") long orderId, @PathVariable("amount") double amount) throws TransactionException {
+    public ResponseEntity pay(@PathVariable("userId") long userId, @PathVariable("orderId") long orderId, @PathVariable("amount") double amount) throws TransactionException {
         if (paymentService.pay(userId, amount)) {
-            return "200";
+            return new ResponseCode().ok();
         } else {
-            return "400";
+            return new ResponseCode().error();
         }
     }
 
     //payment/cancel/{user_id}/{order_id}
     //    POST - cancels payment made by a specific user for a specific order.
     @PostMapping("cancel/{userId}/{orderId}")
-    public String cancel(@PathVariable("userId") long userid, @PathVariable("orderId") long orderid) {
+    public ResponseEntity cancel(@PathVariable("userId") long userid, @PathVariable("orderId") long orderid) {
         try {
             paymentService.cancel(userid, orderid);
-            return "200";
-        } catch (Exception e) {
-            return "400";
+            return new ResponseCode().ok();
+        } catch (TransactionException e) {
+            return new ResponseCode().error();
         }
     }
 

@@ -2,9 +2,12 @@ package WDM.controller;
 
 import WDM.pojo.Stock;
 import WDM.service.StockService;
+import WDM.utils.ResponseCode;
 import io.seata.core.exception.TransactionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -37,7 +40,7 @@ public class StockController {
     }
 
     @PostMapping("findStock/{itemId}")
-    public int StockById(@PathVariable("itemId") long itemId){
+    public int StockById(@PathVariable("itemId") long itemId) {
         Stock stock = stockService.queryById(itemId);
         return stock.getAmount();
     }
@@ -45,22 +48,23 @@ public class StockController {
     //    /stock/subtract/{item_id}/{amount}
     //    POST - subtracts an item from stock by the amount specified.
     @PostMapping("subtract/{itemId}/{amount}")
-    public String subtract(@PathVariable("itemId") long itemId, @PathVariable("amount") int amount) throws TransactionException {
+    public ResponseEntity subtract(@PathVariable("itemId") long itemId, @PathVariable("amount") int amount) throws TransactionException {
         if (stockService.subtract(itemId, amount)) {
-            return "200";
+            return new ResponseCode().ok();
         } else {
-            return "400";
+            return new ResponseCode().error();
         }
     }
+
 
     ///stock/add/{item_id}/{amount}
     //    POST - adds the given number of stock items to the item count in the stock
     @PostMapping("add/{itemId}/{amount}")
-    public String add(@PathVariable("itemId") long id, @PathVariable("amount") int amount) {
+    public ResponseEntity add(@PathVariable("itemId") long id, @PathVariable("amount") int amount) {
         if (stockService.add(id, amount) == Boolean.TRUE) {
-            return "200";
+            return new ResponseCode().ok();
         } else {
-            return "400";
+            return new ResponseCode().error();
         }
     }
 
