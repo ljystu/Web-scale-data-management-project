@@ -1,6 +1,5 @@
 package WDM.utils;
 
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -139,7 +138,7 @@ public class UniqueOrderGenerate {
         return (((timestamp - twepoch) << timestampLeftShift) //
                 | (datacenterId << datacenterIdShift) //
                 | (workerId << workerIdShift) //
-                | sequence) * 100000 + ThreadLocalRandom.current().nextInt(0, 99999 + 1);
+                | sequence) * 1000 + ThreadLocalRandom.current().nextInt(0, 9999 + 1);
     }
 
     /**

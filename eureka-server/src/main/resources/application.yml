@@ -3,6 +3,8 @@ server:
 spring:
   application:
     name: eureka-server
+  main:
+    allow-circular-references: true
 eureka:
   client:
     registerWithEureka: false

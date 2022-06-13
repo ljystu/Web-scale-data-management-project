@@ -1,12 +1,12 @@
 package WDM.service.Impl;
 
 import WDM.mapper.ItemMapper;
-import WDM.mapper.OrderMapper;
-import WDM.pojo.Item;
-import WDM.pojo.Order;
 import WDM.service.OrderService;
 import WDM.utils.ResponseCode;
 import WDM.utils.UniqueOrderGenerate;
+import WDM.mapper.OrderMapper;
+import WDM.pojo.Item;
+import WDM.pojo.Order;
 import com.github.yitter.idgen.YitIdHelper;
 import feign.clients.PaymentClient;
 import feign.clients.StockClient;
@@ -17,8 +17,6 @@ import io.seata.spring.annotation.GlobalTransactional;
 import io.seata.tm.api.GlobalTransactionContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -1,18 +1,16 @@
 package WDM.controller;
 
-import WDM.pojo.Stock;
 import WDM.service.StockService;
 import WDM.utils.ResponseCode;
+import WDM.pojo.Stock;
 import io.seata.core.exception.TransactionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
-
 
 @RestController
 @EnableEurekaClient
@@ -55,7 +53,6 @@ public class StockController {
             return new ResponseCode().error();
         }
     }
-
 
     ///stock/add/{item_id}/{amount}
     //    POST - adds the given number of stock items to the item count in the stock

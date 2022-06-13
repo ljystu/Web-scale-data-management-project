@@ -10,6 +10,8 @@ spring:
     driver-class-name: org.postgresql.Driver
   application:
     name: payment-service
+  main:
+    allow-circular-references: true
 mybatis:
   type-aliases-package: WDM.pojo
   configuration:
@@ -36,7 +38,10 @@ seata:
         retry-interval: 100
 
 #
-#feign:
-#  httpclient:
+feign:
+  httpclient:
+    enabled: true
+    max-connections: 200
+    max-connections-per-route: 50
 #    connection-timeout: 60000
 #    connection-timer-repeat: 3000

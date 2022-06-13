@@ -4,4 +4,4 @@
 /order-service/target/
 /stock-service/target/
 /eureka-server/target/
-feign-api/target/
+/feign-api/target/
