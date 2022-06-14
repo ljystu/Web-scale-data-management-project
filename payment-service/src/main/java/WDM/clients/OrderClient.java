@@ -1,9 +1,8 @@
-package feign.clients;
+package WDM.clients;
 
 
-import feign.config.MultipartSupportConfig;
-import feign.pojo.Order;
-import feign.pojo.Stock;
+import WDM.config.MultipartSupportConfig;
+import WDM.pojo.Order;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

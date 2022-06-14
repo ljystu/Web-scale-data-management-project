@@ -1,7 +1,7 @@
-package feign.clients;
+package WDM.clients;
 
-import feign.config.MultipartSupportConfig;
-import feign.pojo.Payment;
+import WDM.config.MultipartSupportConfig;
+import WDM.pojo.Payment;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

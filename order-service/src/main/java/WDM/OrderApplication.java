@@ -3,8 +3,8 @@ package WDM;
 
 import com.github.yitter.contract.IdGeneratorOptions;
 import com.github.yitter.idgen.YitIdHelper;
-import feign.clients.PaymentClient;
-import feign.clients.StockClient;
+import WDM.clients.PaymentClient;
+import WDM.clients.StockClient;
 import io.seata.spring.annotation.datasource.EnableAutoDataSourceProxy;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;

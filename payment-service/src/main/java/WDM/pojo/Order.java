@@ -1,4 +1,4 @@
-package feign.pojo;
+package WDM.pojo;
 
 import lombok.Data;
 

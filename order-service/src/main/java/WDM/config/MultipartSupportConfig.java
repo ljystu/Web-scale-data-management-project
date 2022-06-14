@@ -1,4 +1,4 @@
-package feign.config;
+package WDM.config;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
