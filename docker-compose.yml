@@ -57,6 +57,24 @@ services:
     #image: ljystu/dockerhub:order
     build: ./order-service
     depends_on:
-      - seata-server
+      - eureka-server
     ports:
     - "8081:8081"
+
+  stock-service:
+    container_name: stock-service
+    #image: ljystu/dockerhub:stock
+    build: ./stock-service
+    depends_on:
+      - eureka-server
+    ports:
+      - "8082:8082"
+
+  payment-service:
+    container_name: payment-service
+    #image: ljystu/dockerhub:payment
+    build: ./payment-service
+    depends_on:
+      - eureka-server
+    ports:
+      - "8083:8083"
