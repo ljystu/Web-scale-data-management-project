@@ -1,3 +1,5 @@
+*.iml
+/pgdata/**
 /.idea/
 /.DS_Sore
 /payment-service/target/**
