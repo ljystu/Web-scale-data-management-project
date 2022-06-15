@@ -2,7 +2,7 @@ server:
   port: 8081
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/Order?useSSL=false
+    url: jdbc:postgresql://db:5432/Order?useSSL=false
     #      jdbc:postgresql://database-1:cxbgmrby1kdy:eu-central-1:rds:amazonaws:com:5432/Order?useSSL=false:
     username: postgres
     password: postgresql
@@ -19,7 +19,7 @@ mybatis:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8088/eureka
+      defaultZone: http://eureka-server:8088/eureka
 #logging:
 #  level:
 #    WDM: debug
@@ -30,7 +30,7 @@ seata:
     vgroupMapping:
       eurekaserver-seata-service-group: default
     grouplist:
-      default: 127.0.0.1:8091
+      default: seata-server:8091
   enabled: true
   data-source-proxy-mode: AT
   client:
