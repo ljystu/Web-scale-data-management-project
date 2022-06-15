@@ -44,8 +44,8 @@ services:
       
   eureka-server: 
     container_name: eureka-server
-    #image: ljystu/dockerhub:eureka
-    build: ./eureka-server
+    image: keonchennl/wdm22-project:eureka-server
+    # build: ./eureka-server
     depends_on:
       - seata-server
     ports: 
@@ -54,8 +54,8 @@ services:
   # WDM services
   order-service:
     container_name: order-service
-    #image: ljystu/dockerhub:order
-    build: ./order-service
+    image: keonchennl/wdm22-project:order-service
+    # build: ./order-service
     depends_on:
       - eureka-server
     ports:
@@ -63,8 +63,8 @@ services:
 
   stock-service:
     container_name: stock-service
-    #image: ljystu/dockerhub:stock
-    build: ./stock-service
+    image: keonchennl/wdm22-project:stock-service
+    # build: ./stock-service
     depends_on:
       - eureka-server
     ports:
@@ -72,8 +72,8 @@ services:
 
   payment-service:
     container_name: payment-service
-    #image: ljystu/dockerhub:payment
-    build: ./payment-service
+    image: keonchennl/wdm22-project:payment-service
+    # build: ./payment-service
     depends_on:
       - eureka-server
     ports:
