@@ -19,7 +19,9 @@ mybatis:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8088/eureka
+      defaultZone: http://${eureka.instance.hostname}:8088/eureka
+  instance:
+    hostname: eureka-server
 #logging:
 #  level:
 #    WDM: debug
