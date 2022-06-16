@@ -17,6 +17,6 @@ seata:
     vgroupMapping:
       eurekaserver-seata-service-group: default
     grouplist:
-      default: 127.0.0.1:8091
+      default: seata-server:8091
   enabled: true
   data-source-proxy-mode: AT

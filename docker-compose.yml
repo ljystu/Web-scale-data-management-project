@@ -1,0 +1,80 @@
+version: '3.0' 
+services: 
+  db:
+    container_name: postgresql
+    image: postgres
+    restart: always
+    volumes:
+      - type: bind # use bind mode otherwise the sh file is mounted as a folder
+        source: ./deployment/database/init_db.sh
+        target: /docker-entrypoint-initdb.d/init_db.sh
+    environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgresql
+        PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432" # Expose to host for testing
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+    - "6379:6379"
+
+  seata-server:
+    image: seataio/seata-server:1.4.2
+    hostname: seata-server
+    depends_on:
+      - db
+      - redis
+    ports:
+      - "8091:8091"
+    environment:
+      - SEATA_PORT=8091
+      - SEATA_CONFIG_NAME=file:/root/seata-config/registry
+    volumes:
+      # make sure file.conf and registry.conf are there
+      - "./deployment/seata-config:/root/seata-config"
+      
+  eureka-server: 
+    container_name: eureka-server
+    image: keonchennl/wdm22-project:eureka-server
+    # build: ./eureka-server
+    depends_on:
+      - seata-server
+    ports: 
+    - "8088:8088"
+
+  # WDM services
+  order-service:
+    container_name: order-service
+    image: keonchennl/wdm22-project:order-service
+    # build: ./order-service
+    depends_on:
+      - eureka-server
+    ports:
+    - "8081:8081"
+
+  stock-service:
+    container_name: stock-service
+    image: keonchennl/wdm22-project:stock-service
+    # build: ./stock-service
+    depends_on:
+      - eureka-server
+    ports:
+      - "8082:8082"
+
+  payment-service:
+    container_name: payment-service
+    image: keonchennl/wdm22-project:payment-service
+    # build: ./payment-service
+    depends_on:
+      - eureka-server
+    ports:
+      - "8083:8083"
