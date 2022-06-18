@@ -1,7 +1,10 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
-psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+# In case pqsl asks for a password
+export PGPASSWORD="$POSTGRESQL_PASSWORD"
+
+psql -v ON_ERROR_STOP=1 --username "$POSTGRESQL_USERNAME" --dbname "$POSTGRESQL_DATABASE" <<-EOSQL
 	CREATE DATABASE "Order";
 	CREATE DATABASE "Payment";
 	CREATE DATABASE "Stock";
@@ -12,7 +15,7 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
 	GRANT ALL PRIVILEGES ON DATABASE "seata" TO postgres;
 EOSQL
 
-psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "Order" <<-EOSQL
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USERNAME" --dbname "Order" <<-EOSQL
 CREATE TABLE "orderinfo"
 (
     orderid bigint NOT NULL,
@@ -109,7 +112,7 @@ CREATE SEQUENCE IF NOT EXISTS undo_log_id_seq_3 INCREMENT BY 1 MINVALUE 1;
 EOSQL
 
 
-psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "Payment" <<-EOSQL
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USERNAME" --dbname "Payment" <<-EOSQL
 CREATE TABLE   "payment"
 (
     userid bigint NOT NULL,
@@ -163,7 +166,7 @@ CREATE TABLE   "undo_log"
 CREATE SEQUENCE IF NOT EXISTS undo_log_id_seq_1 INCREMENT BY 1 MINVALUE 1;
 EOSQL
 
-psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "Stock" <<-EOSQL
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USERNAME" --dbname "Stock" <<-EOSQL
 CREATE TABLE   "stock"
 (
     itemid bigint NOT NULL,
@@ -222,7 +225,7 @@ ALTER TABLE IF EXISTS "undo_log"
     OWNER to postgres;
 EOSQL
 
-psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "seata" <<-EOSQL
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USERNAME" --dbname "seata" <<-EOSQL
 CREATE TABLE   "distributed_lock"
 (
     lock_key character varying(20) COLLATE pg_catalog."default" NOT NULL,
@@ -380,3 +383,8 @@ CREATE INDEX   "idx_xid_and_branch_id"
     (xid COLLATE pg_catalog."default" ASC NULLS LAST, branch_id ASC NULLS LAST)
     TABLESPACE pg_default;
 EOSQL
+
+
+#pg_basebackup -h "db-slave" -D /srv/pgsql/standby -X stream -P -U postgres -Fp -R
+
+#pg_basebackup -D $PGDATA -S replication_slot_slave1 -X stream -P -U replicator -Fp -R
