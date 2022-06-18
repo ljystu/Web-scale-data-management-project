@@ -1,0 +1,162 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: seata-server
+  namespace: default
+  labels:
+    k8s-app: seata-server
+spec:
+  type: NodePort
+  ports:
+    - port: 8091
+      nodePort: 30091
+      protocol: TCP
+      name: http
+  selector:
+    k8s-app: seata-server
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: seata-server
+  namespace: default
+  labels:
+    k8s-app: seata-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: seata-server
+  template:
+    metadata:
+      labels:
+        k8s-app: seata-server
+    spec:
+      containers:
+        - name: seata-server
+          image: docker.io/seataio/seata-server:1.4.2
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SEATA_CONFIG_NAME
+              value: file:/root/seata-config/registry
+          ports:
+            - name: http
+              containerPort: 8091
+              protocol: TCP
+          volumeMounts:
+            - name: seata-config
+              mountPath: /root/seata-config
+      volumes:
+        - name: seata-config
+          configMap:
+            name: seata-server-config
+            items:
+              - key: registry.conf
+                path: registry.conf
+              - key: file.conf
+                path: file.conf
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: seata-server-config
+data:
+  registry.conf: |
+    registry {
+        type = "file"
+        eureka {
+          serviceUrl = "http://eureka-server:8088/eureka"
+          application = "default"
+          weight = "1"
+        }
+    }
+    config {
+      type = "file"
+      file {
+        name = "file.conf"
+      }
+    }
+  file.conf: |
+    ## transaction log store, only used in seata-server
+    store {
+      ## store mode: file、db、redis
+      mode = "redis"
+      ## rsa decryption public key
+      publicKey = ""
+      ## file store property
+      file {
+        ## store location dir
+        dir = "sessionStore"
+        # branch session size , if exceeded first try compress lockkey, still exceeded throws exceptions
+        maxBranchSessionSize = 16384
+        # globe session size , if exceeded throws exceptions
+        maxGlobalSessionSize = 512
+        # file buffer size , if exceeded allocate new buffer
+        fileWriteBufferCacheSize = 16384
+        # when recover batch read size
+        sessionReloadReadSize = 100
+        # async, sync
+        flushDiskMode = async
+      }
+    service {
+      #transaction service group mapping
+      vgroupMapping.eurekaserver-seata-service-group = "default"
+      #only support when registry.type=file, please don't set multiple addresses
+      default.grouplist = "seata-server:8091"
+      #degrade, current not support
+      enableDegrade = false
+      #disable seata
+      disableGlobalTransaction = false
+    }
+      ## database store property
+      db {
+        ## the implement of javax.sql.DataSource, such as DruidDataSource(druid)/BasicDataSource(dbcp)/HikariDataSource(hikari) etc.
+        datasource = "druid"
+        ## mysql/oracle/postgresql/h2/oceanbase etc.
+        dbType = "postgresql"
+        driverClassName = "org.postgresql.Driver"
+        ## if using mysql to store the data, recommend add rewriteBatchedStatements=true in jdbc connection param
+        url = "jdbc:postgresql://db-seata:5432/seata?useSSL=false"
+        user = "postgres"
+        password = "postgresql"
+        minConn = 5
+        maxConn = 100
+        globalTable = "global_table"
+        branchTable = "branch_table"
+        lockTable = "lock_table"
+        queryLimit = 100
+        maxWait = 5000
+      }
+
+      ## redis store property
+       redis {
+        ## redis mode: single、sentinel
+    #     mode = "single"
+        ## single mode property
+    #     single {
+          host = "redis"
+          port = "6379"
+          database = "0"
+          minConn = 1
+          maxConn = 100
+          maxTotal = 1000
+          password = ""
+          queryLimit = 1000
+        }
+      #   ## sentinel mode property
+      #   sentinel {
+      #     masterName = ""
+      #     ## such as "10.28.235.65:26379,10.28.235.65:26380,10.28.235.65:26381"
+      #     sentinelHosts = ""
+      #   }
+      #   password = ""
+      #   database = "0"
+      #   minConn = 1
+      #   maxConn = 10
+      #   maxTotal = 100
+      #   queryLimit = 100
+      # }
+    }

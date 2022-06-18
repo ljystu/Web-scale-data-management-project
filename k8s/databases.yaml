@@ -1,0 +1,269 @@
+# Order service database
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: db-order
+  name: db-order
+spec:
+#  type: NodePort
+  ports:
+    - port: 5432
+      targetPort: 5432
+#      nodePort: 30001
+  selector:
+    app: db-order
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: db-order
+  name: db-order-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-order
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: db-order
+    spec:
+      containers:
+        - image: postgres:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+          name: db-order
+          resources:
+            limits:
+              memory: "1Gi"
+              cpu: "1"
+            requests:
+              memory: "1Gi"
+              cpu: "1"
+          command: []
+          args: []
+          volumeMounts:
+            - name: "db-order-init"
+              mountPath: /docker-entrypoint-initdb.d/
+          env:
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: postgresql
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+      volumes:
+        - name: "db-order-init"
+          configMap:
+            name: init-db-scripts
+            items:
+              - key: init-db-order.sh
+                path: init-db-order.sh # The actual file name/path in the container
+            defaultMode: 0777
+      restartPolicy: Always
+status: {}
+---
+# Payment service database
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: db-payment
+  name: db-payment
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: db-payment
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: db-payment
+  name: db-payment-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-payment
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: db-payment
+    spec:
+      containers:
+        - image: postgres:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+          name: db-payment
+          resources:
+            limits:
+              memory: "1Gi"
+              cpu: "1"
+            requests:
+              memory: "1Gi"
+              cpu: "1"
+          command: []
+          args: []
+          volumeMounts:
+            - name: "db-payment-init"
+              mountPath: /docker-entrypoint-initdb.d/
+          env:
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: postgresql
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+      volumes:
+        - name: "db-payment-init"
+          configMap:
+            name: init-db-scripts
+            items:
+              - key: init-db-payment.sh
+                path: init-db-payment.sh # The actual file name/path in the container
+            defaultMode: 0777
+      restartPolicy: Always
+status: {}
+---
+# Stock service database
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: db-stock
+  name: db-stock
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: db-stock
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: db-stock
+  name: db-stock-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-stock
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: db-stock
+    spec:
+      containers:
+        - image: postgres:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+          name: db-stock
+          resources:
+            limits:
+              memory: "1Gi"
+              cpu: "1"
+            requests:
+              memory: "1Gi"
+              cpu: "1"
+          command: []
+          args: []
+          volumeMounts:
+            - name: "db-stock-init"
+              mountPath: /docker-entrypoint-initdb.d/
+          env:
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: postgresql
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+      volumes:
+        - name: "db-stock-init"
+          configMap:
+            name: init-db-scripts
+            items:
+              - key: init-db-stock.sh
+                path: init-db-stock.sh # The actual file name/path in the container
+            defaultMode: 0777
+      restartPolicy: Always
+status: {}
+---
+# Seata service database
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: db-seata
+  name: db-seata
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: db-seata
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: db-seata
+  name: db-seata-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-seata
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: db-seata
+    spec:
+      containers:
+        - image: postgres:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+          name: db-seata
+          resources:
+            limits:
+              memory: "1Gi"
+              cpu: "1"
+            requests:
+              memory: "1Gi"
+              cpu: "1"
+          command: []
+          args: []
+          volumeMounts:
+            - name: "db-seata-init"
+              mountPath: /docker-entrypoint-initdb.d/
+          env:
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: postgresql
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+      volumes:
+        - name: "db-seata-init"
+          configMap:
+            name: init-db-scripts
+            items:
+              - key: init-db-seata.sh
+                path: init-db-seata.sh # The actual file name/path in the container
+            defaultMode: 0777
+      restartPolicy: Always
+status: {}
