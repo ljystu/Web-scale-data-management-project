@@ -12,3 +12,13 @@ Build images for eureka-service, order-service, payment-service and stock-servic
 mvn clean package
 docker-compose up -f docker-compose-build-services.yml
 ```
+
+## Local deployment: k8s
+Prerequisites:
+minikube is installed
+
+Run the following command to start all services
+```shell
+minikube addons enable ingress
+kubectl apply -f .\k8s\.
+```
