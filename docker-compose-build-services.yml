@@ -44,8 +44,7 @@ services:
       
   eureka-server: 
     container_name: eureka-server
-    image: keonchennl/wdm22-project:eureka-server
-    # build: ./eureka-server
+    build: ./eureka-server
     depends_on:
       - seata-server
     ports: 
