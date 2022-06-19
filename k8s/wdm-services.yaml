@@ -1,0 +1,185 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: eureka-server
+  namespace: default
+  labels:
+    k8s-app: eureka-server
+spec:
+  type: NodePort
+  ports:
+    - port: 8088
+      nodePort: 30188
+      protocol: TCP
+  selector:
+    k8s-app: eureka-server
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: eureka-server
+  namespace: default
+  labels:
+    k8s-app: eureka-server
+spec:
+  replicas: 1
+  serviceName: "eureka-server"
+  selector:
+    matchLabels:
+      k8s-app: eureka-server
+  template:
+    metadata:
+      labels:
+        k8s-app: eureka-server
+    spec:
+      containers:
+        - name: eureka-server
+          image: keonchennl/wdm22-group6-eureka-server:v1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8088
+              protocol: TCP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service
+  namespace: default
+  labels:
+    k8s-app: order-service
+spec:
+  type: NodePort
+  ports:
+    - port: 8081
+      targetPort: 8081
+      nodePort: 30181
+  selector:
+    k8s-app: order-service
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: order-service
+  namespace: default
+  labels:
+    k8s-app: order-service
+spec:
+  replicas: 1
+  serviceName: "order-service"
+  selector:
+    matchLabels:
+      k8s-app: order-service
+  template:
+    metadata:
+      labels:
+        k8s-app: order-service
+    spec:
+      containers:
+        - name: order-service
+          image: keonchennl/wdm22-group6-order-service:v1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8081
+              protocol: TCP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: stock-service
+  namespace: default
+  labels:
+    k8s-app: stock-service
+spec:
+  type: NodePort
+  ports:
+    - port: 8082
+      nodePort: 30182
+      protocol: TCP
+  selector:
+    k8s-app: stock-service
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: stock-service
+  namespace: default
+  labels:
+    k8s-app: stock-service
+spec:
+  replicas: 1
+  serviceName: "stock-service"
+  selector:
+    matchLabels:
+      k8s-app: stock-service
+  template:
+    metadata:
+      labels:
+        k8s-app: stock-service
+    spec:
+      containers:
+        - name: stock-service
+          image: keonchennl/wdm22-group6-stock-service:v1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8082
+              protocol: TCP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-service
+  namespace: default
+  labels:
+    k8s-app: payment-service
+spec:
+  type: NodePort
+  ports:
+    - port: 8083
+      nodePort: 30183
+      protocol: TCP
+  selector:
+    k8s-app: payment-service
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: payment-service
+  namespace: default
+  labels:
+    k8s-app: payment-service
+spec:
+  replicas: 1
+  serviceName: "payment-service"
+  selector:
+    matchLabels:
+      k8s-app: payment-service
+  template:
+    metadata:
+      labels:
+        k8s-app: payment-service
+    spec:
+      containers:
+        - name: payment-service
+          image: keonchennl/wdm22-group6-payment-service:v1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8083
+              protocol: TCP

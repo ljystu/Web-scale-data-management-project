@@ -2,7 +2,8 @@ server:
   port: 8082
 spring:
   datasource:
-    url: jdbc:postgresql://pgpool:5432/Stock?useSSL=false
+    url: jdbc:postgresql://db-stock:5432/Stock?useSSL=false
+#    url: jdbc:postgresql://pgpool:5432/Stock?useSSL=false
     #      jdbc:postgresql://database-1:cxbgmrby1kdy:eu-central-1:rds:amazonaws:com:5432/Stock?useSSL=false:
     username: postgres
     password: postgresql

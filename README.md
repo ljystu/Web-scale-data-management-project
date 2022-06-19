@@ -6,9 +6,19 @@ Run the following command to run all the services
 docker-compose up
 ```
 
-## For development
+### (Optional) build wdm service images locally before running the containers 
 Build images for eureka-service, order-service, payment-service and stock-service
 ```bash
 mvn clean package
-docker-compose build
+docker-compose up -f docker-compose-build-services.yml
+```
+
+## Local deployment: k8s
+Prerequisites:
+minikube is installed
+
+Run the following command to start all services
+```shell
+minikube addons enable ingress
+kubectl apply -f .\k8s\.
 ```

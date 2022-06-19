@@ -1,107 +1,64 @@
-version: '3.0'
-
-services:
-  pg-0:
-    image: bitnami/postgresql-repmgr:14
-    ports:
-      - "5432"
+version: '3.0' 
+services: 
+  db-order:
+    container_name: postgresql-order
+    image: postgres
+    restart: always
     volumes:
-      - pg_0_data:/bitnami/postgresql
       - type: bind # use bind mode otherwise the sh file is mounted as a folder
-        source: ./deployment/database/init_db.sh
-        target: /docker-entrypoint-initdb.d/init_db.sh
+        source: ./deployment/database/init_db_order.sh
+        target: /docker-entrypoint-initdb.d/init_db_order.sh
     environment:
-      - POSTGRESQL_POSTGRES_PASSWORD=postgresql
-      - POSTGRESQL_USERNAME=postgres
-      - POSTGRESQL_PASSWORD=postgresql
-      - POSTGRESQL_DATABASE=postgres
-      - REPMGR_PASSWORD=postgresql
-      - REPMGR_PRIMARY_HOST=pg-0
-      - REPMGR_PARTNER_NODES=pg-0,pg-1
-      - REPMGR_NODE_NAME=pg-0
-      - REPMGR_NODE_NETWORK_NAME=pg-0
-  pg-1:
-    image: bitnami/postgresql-repmgr:14
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgresql
+        PGDATA: /var/lib/postgresql/data/pgdata
     ports:
-      - "5432"
+      - "6432:5432" # Expose to host for testing
+
+  db-stock:
+    container_name: postgresql-stock
+    image: postgres
+    restart: always
     volumes:
-      - pg_1_data:/bitnami/postgresql
+      - type: bind # use bind mode otherwise the sh file is mounted as a folder
+        source: ./deployment/database/init_db_stock.sh
+        target: /docker-entrypoint-initdb.d/init_db_stock.sh
     environment:
-      - POSTGRESQL_POSTGRES_PASSWORD=postgresql
-      - POSTGRESQL_USERNAME=postgres
-      - POSTGRESQL_PASSWORD=postgresql
-      - POSTGRESQL_DATABASE=postgres
-      - REPMGR_PASSWORD=postgresql
-      - REPMGR_PRIMARY_HOST=pg-0
-      - REPMGR_PARTNER_NODES=pg-0,pg-1
-      - REPMGR_NODE_NAME=pg-1
-      - REPMGR_NODE_NETWORK_NAME=pg-1
-  pgpool:
-    image: bitnami/pgpool:4
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgresql
+      PGDATA: /var/lib/postgresql/data/pgdata
     ports:
-      - "5432:5432"
-    environment:
-      - PGPOOL_BACKEND_NODES=0:pg-0:5432,1:pg-1:5432
-      - PGPOOL_SR_CHECK_USER=postgres
-      - PGPOOL_SR_CHECK_PASSWORD=postgresql
-      - PGPOOL_POSTGRES_USERNAME=postgres
-      - PGPOOL_POSTGRES_PASSWORD=postgresql
-      - PGPOOL_ADMIN_USERNAME=postgres
-      - PGPOOL_ADMIN_PASSWORD=postgresql
-    healthcheck:
-      test: ["CMD", "/opt/bitnami/scripts/pgpool/healthcheck.sh"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-#  db:
-#    container_name: postgresql
-#    image: postgres
-#    restart: always
-#    command: postgres -c config_file=/etc/postgresql/postgresql.conf -c hba_file=/etc/postgresql/pg_hba.conf
-#    volumes:
-#      - ./deployment/database/postgresql_master.conf:/etc/postgresql/postgresql.conf
-#      - ./deployment/database/pg_hba_master.conf:/etc/postgresql/pg_hba.conf
-#      - type: bind # use bind mode otherwise the sh file is mounted as a folder
-#        source: ./deployment/database/init_db.sh
-#        target: /docker-entrypoint-initdb.d/init_db.sh
-#    environment:
-#      POSTGRES_USER: postgres
-#      POSTGRES_PASSWORD: postgresql
-#      PGDATA: /var/lib/postgresql/data/pgdata
-#    ports:
-#      - "5432:5432"
-#  db-slave:
-#    container_name: postgresql-slave
-#    image: postgres
-#    restart: always
-#    command: postgres -c config_file=/etc/postgresql/postgresql.conf -c hba_file=/etc/postgresql/pg_hba.conf
-#    volumes:
-#      - ./deployment/database/postgresql_slave.conf:/etc/postgresql/postgresql.conf
-#      - ./deployment/database/pg_hba_master.conf:/etc/postgresql/pg_hba.conf
-#      - type: bind # use bind mode otherwise the sh file is mounted as a folder
-#        source: ./deployment/database/init_db_slave.sh
-#        target: /docker-entrypoint-initdb.d/init_db.sh
-#    environment:
-#      POSTGRES_USER: postgres
-#      POSTGRES_PASSWORD: postgresql
-#      PGDATA: /var/lib/postgresql/data/pgdata
-#      HOST_NAME: db
-#    ports:
-#      - "5431:5432" # Expose to host for testing
-#    depends_on:
-#      - db
-  pgadmin:
-    container_name: pgadmin
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      - "6433:5432" # Expose to host for testing
+
+  db-payment:
+    container_name: postgresql-payment
+    image: postgres
+    restart: always
     volumes:
-      - ./pgadmin:/var/lib/pgadmin
+      - type: bind # use bind mode otherwise the sh file is mounted as a folder
+        source: ./deployment/database/init_db_payment.sh
+        target: /docker-entrypoint-initdb.d/init_db_payment.sh
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgresql
+      PGDATA: /var/lib/postgresql/data/pgdata
     ports:
-      - "5050:80"
-    restart: unless-stopped
+      - "6434:5432" # Expose to host for testing
+
+  db-seata:
+    container_name: postgresql-seata
+    image: postgres
+    restart: always
+    volumes:
+      - type: bind # use bind mode otherwise the sh file is mounted as a folder
+        source: ./deployment/database/init_db_seata.sh
+        target: /docker-entrypoint-initdb.d/init_db_seata.sh
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgresql
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "6435:5432" # Expose to host for testing
 
   adminer:
     image: adminer
@@ -113,13 +70,13 @@ services:
     container_name: redis
     image: redis
     ports:
-      - "6379:6379"
+    - "6379:6379"
 
   seata-server:
     image: seataio/seata-server:1.4.2
     hostname: seata-server
     depends_on:
-      - db
+      - db-seata
       - redis
     ports:
       - "8091:8091"
@@ -129,15 +86,15 @@ services:
     volumes:
       # make sure file.conf and registry.conf are there
       - "./deployment/seata-config:/root/seata-config"
-
-  eureka-server:
+      
+  eureka-server: 
     container_name: eureka-server
 #    image: keonchennl/wdm22-project:eureka-server
     build: ./eureka-server
     depends_on:
       - seata-server
-    ports:
-      - "8088:8088"
+    ports: 
+    - "8088:8088"
 
   # WDM services
   order-service:
@@ -145,15 +102,17 @@ services:
 #    image: keonchennl/wdm22-project:order-service
     build: ./order-service
     depends_on:
+      - db-order
       - eureka-server
     ports:
-      - "8081:8081"
+    - "8081:8081"
 
   stock-service:
     container_name: stock-service
 #    image: keonchennl/wdm22-project:stock-service
     build: ./stock-service
     depends_on:
+      - db-stock
       - eureka-server
     ports:
       - "8082:8082"
@@ -163,15 +122,7 @@ services:
 #    image: keonchennl/wdm22-project:payment-service
     build: ./payment-service
     depends_on:
+      - db-payment
       - eureka-server
     ports:
       - "8083:8083"
-
-volumes:
-  pg_0_data:
-    driver: local
-  pg_1_data:
-    driver: local
-networks:
-  my-network:
-    driver: bridge
