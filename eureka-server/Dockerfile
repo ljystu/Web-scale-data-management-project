@@ -12,5 +12,5 @@ ADD target/*.jar /
 
 ENTRYPOINT ["java","-jar","/app.jar"]
 
-EXPOSE 8083
+EXPOSE 8088
 
