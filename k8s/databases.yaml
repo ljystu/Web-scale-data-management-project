@@ -6,26 +6,26 @@ metadata:
     app: db-order
   name: db-order
 spec:
-#  type: NodePort
+  type: NodePort
   ports:
     - port: 5432
       targetPort: 5432
-#      nodePort: 30001
+      nodePort: 30001
   selector:
     app: db-order
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   labels:
     app: db-order
-  name: db-order-deployment
+  name: db-order-statefulset
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: db-order
-  strategy: {}
+  serviceName: "db-order"
+  replicas: 1
   template:
     metadata:
       labels:
@@ -65,7 +65,6 @@ spec:
                 path: init-db-order.sh # The actual file name/path in the container
             defaultMode: 0777
       restartPolicy: Always
-status: {}
 ---
 # Payment service database
 apiVersion: v1
@@ -82,17 +81,17 @@ spec:
     app: db-payment
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   labels:
     app: db-payment
-  name: db-payment-deployment
+  name: db-payment-statefulset
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: db-payment
-  strategy: {}
+  serviceName: db-payment
+  replicas: 1
   template:
     metadata:
       labels:
@@ -132,7 +131,6 @@ spec:
                 path: init-db-payment.sh # The actual file name/path in the container
             defaultMode: 0777
       restartPolicy: Always
-status: {}
 ---
 # Stock service database
 apiVersion: v1
@@ -149,17 +147,17 @@ spec:
     app: db-stock
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   labels:
     app: db-stock
-  name: db-stock-deployment
+  name: db-stock-statefulset
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: db-stock
-  strategy: {}
+  serviceName: db-order
+  replicas: 1
   template:
     metadata:
       labels:
@@ -199,7 +197,6 @@ spec:
                 path: init-db-stock.sh # The actual file name/path in the container
             defaultMode: 0777
       restartPolicy: Always
-status: {}
 ---
 # Seata service database
 apiVersion: v1
@@ -216,17 +213,17 @@ spec:
     app: db-seata
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   labels:
     app: db-seata
-  name: db-seata-deployment
+  name: db-seata-statefulset
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: db-seata
-  strategy: {}
+  serviceName: db-order
+  replicas: 1
   template:
     metadata:
       labels:
@@ -266,4 +263,3 @@ spec:
                 path: init-db-seata.sh # The actual file name/path in the container
             defaultMode: 0777
       restartPolicy: Always
-status: {}

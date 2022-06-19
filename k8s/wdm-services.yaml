@@ -17,7 +17,7 @@ spec:
 ---
 
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: eureka-server
   namespace: default
@@ -25,6 +25,7 @@ metadata:
     k8s-app: eureka-server
 spec:
   replicas: 1
+  serviceName: "eureka-server"
   selector:
     matchLabels:
       k8s-app: eureka-server
@@ -63,7 +64,7 @@ spec:
 ---
 
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: order-service
   namespace: default
@@ -71,6 +72,7 @@ metadata:
     k8s-app: order-service
 spec:
   replicas: 1
+  serviceName: "order-service"
   selector:
     matchLabels:
       k8s-app: order-service
@@ -109,7 +111,7 @@ spec:
 ---
 
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: stock-service
   namespace: default
@@ -117,6 +119,7 @@ metadata:
     k8s-app: stock-service
 spec:
   replicas: 1
+  serviceName: "stock-service"
   selector:
     matchLabels:
       k8s-app: stock-service
@@ -155,7 +158,7 @@ spec:
 ---
 
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: payment-service
   namespace: default
@@ -163,6 +166,7 @@ metadata:
     k8s-app: payment-service
 spec:
   replicas: 1
+  serviceName: "payment-service"
   selector:
     matchLabels:
       k8s-app: payment-service

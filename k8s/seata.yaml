@@ -16,7 +16,7 @@ spec:
 ---
 
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: redis
   namespace: default
@@ -24,6 +24,7 @@ metadata:
     k8s-app: redis
 spec:
   replicas: 1
+  serviceName: "redis"
   selector:
     matchLabels:
       k8s-app: redis
@@ -62,7 +63,7 @@ spec:
 ---
 
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: seata-server
   namespace: default
@@ -70,6 +71,7 @@ metadata:
     k8s-app: seata-server
 spec:
   replicas: 1
+  serviceName: "seata-server"
   selector:
     matchLabels:
       k8s-app: seata-server
