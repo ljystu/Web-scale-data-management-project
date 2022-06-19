@@ -11,11 +11,13 @@ import WDM.clients.StockClient;
 import WDM.pojo.Order;
 import io.seata.core.context.RootContext;
 import io.seata.core.exception.TransactionException;
+import io.seata.spring.annotation.GlobalLock;
 import io.seata.spring.annotation.GlobalTransactional;
 import io.seata.tm.api.GlobalTransactionContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -90,8 +92,8 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-//    @GlobalLock
-//    @Transactional
+    @GlobalLock
+    @Transactional
     public String create() {
         long userId = YitIdHelper.nextId();
         if (paymentMapper.create(userId)) {
@@ -102,8 +104,8 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-//    @GlobalLock
-//    @Transactional
+    @GlobalLock
+    @Transactional
     public Payment queryById(long userId) {
         return paymentMapper.queryById(userId);
     }

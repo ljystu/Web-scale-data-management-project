@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 public interface StockMapper {
-    @Select("select * from stock where itemid = #{itemId} ")
+    @Select("select * from stock where itemid = #{itemId} for update ")
     Stock queryById(long itemId);
 
     @Update("update stock set amount = amount - #{num} where itemid = #{itemId}")
