@@ -13,6 +13,7 @@ import WDM.clients.StockClient;
 import WDM.pojo.Stock;
 import io.seata.core.context.RootContext;
 import io.seata.core.exception.TransactionException;
+import io.seata.spring.annotation.GlobalLock;
 import io.seata.spring.annotation.GlobalTransactional;
 import io.seata.tm.api.GlobalTransactionContext;
 import lombok.extern.slf4j.Slf4j;
@@ -46,8 +47,8 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
-//    @Transactional
-//    @GlobalLock
+    @Transactional
+    @GlobalLock
     public long createOrder(long userId) {
         long orderId = YitIdHelper.nextId();
         if (orderMapper.createOrder(userId, orderId)) {

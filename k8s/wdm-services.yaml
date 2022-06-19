@@ -36,7 +36,7 @@ spec:
     spec:
       containers:
         - name: eureka-server
-          image: keonchennl/wdm22-group6-eureka-server:v1.0.0
+          image: keonchennl/wdm22-group6-eureka-server:v1.1.0
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -83,7 +83,7 @@ spec:
     spec:
       containers:
         - name: order-service
-          image: keonchennl/wdm22-group6-order-service:v1.0.0
+          image: keonchennl/wdm22-group6-order-service:v1.1.0
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -130,7 +130,7 @@ spec:
     spec:
       containers:
         - name: stock-service
-          image: keonchennl/wdm22-group6-stock-service:v1.0.0
+          image: keonchennl/wdm22-group6-stock-service:v1.1.0
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -177,7 +177,7 @@ spec:
     spec:
       containers:
         - name: payment-service
-          image: keonchennl/wdm22-group6-payment-service:v1.0.0
+          image: keonchennl/wdm22-group6-payment-service:v1.1.0
           imagePullPolicy: IfNotPresent
           ports:
             - name: http

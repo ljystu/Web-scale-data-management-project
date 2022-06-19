@@ -77,7 +77,7 @@
     </dependencies>
 
     <build>
-        <finalName>app</finalName>
+        <finalName>payment-service</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

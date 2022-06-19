@@ -7,6 +7,7 @@ import com.github.yitter.idgen.YitIdHelper;
 import feign.FeignException;
 import io.seata.core.context.RootContext;
 import io.seata.core.exception.TransactionException;
+import io.seata.spring.annotation.GlobalLock;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,8 +21,8 @@ public class StockServiceImpl implements StockService {
     StockMapper stockMapper;
 
     @Override
-//    @GlobalLock
-//    @Transactional
+    @GlobalLock
+    @Transactional
     public Stock queryById(long itemId) {
         return stockMapper.queryById(itemId);
     }
@@ -51,7 +52,7 @@ public class StockServiceImpl implements StockService {
 
     @Override
     @Transactional
-//    @GlobalLock
+    @GlobalLock
     public String create(double price) {
         long itemId = YitIdHelper.nextId();// Generate random itemId using snowflake algorithm
         stockMapper.create(itemId, price);
