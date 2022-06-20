@@ -165,6 +165,7 @@ In order to create a robust and fault-tolerant system, one feature we chose to i
 ## final versions of tech stacks:
 | Stack | Version |  
 | -------- | -------- | 
+| java | 1.8 |
 | Seata    | 1.4.2   |
 | SpringCloud.Alibaba    | 2021.1  |
 | Feign-client    |  3.1.2 |
